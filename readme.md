@@ -24,7 +24,7 @@ buildscript {
 
 This will create a version file at src/main/java/com/your/project/MyVersion.java
 
-== Tasks ==
+## Tasks
 
 | Task Name   |   Description   |
 | ------------|-----------------|
@@ -32,7 +32,7 @@ This will create a version file at src/main/java/com/your/project/MyVersion.java
 | checkForVersionFile    | Checks to see if the version file has been created and throws an exception if not |
 | checkDependsOnSNAPSHOT | If not a SNAPSHOT itself it will fail if there are any dependencies on snapshots  |
 
-== Automatic Invoking ==
+## Automatic Invoking
 
 To ensure that your version file is always up to date it's recommended that you make a task that's called before compile invokes it.
 
@@ -45,7 +45,6 @@ For an Android project here's how you shouold do it:
 ```groovy
 project(':app').preBuild.dependsOn(createVersionFile)
 ```
-
-== Contact ==
+## Contact
 
 This plugin is written by Peter Abeles and has been released into the Public Domain. Use github to post bugs and feature requests.
