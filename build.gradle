@@ -1,0 +1,25 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+group = 'com.peterabeles'
+version = '1.0'
+
+project.archivesBaseName = 'gversion'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+
+    maven {
+        url = "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.3'
+}
