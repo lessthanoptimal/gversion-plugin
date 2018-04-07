@@ -15,19 +15,22 @@ gversion {
 }
 ```
 
-This will create a version file at src/main/java/com/your/project/MyVersion.java
+After you invoke the Gradle task 'createVersionFile' it will create a class at src/main/java/com/your/project/MyVersion.java.
+```java
+/**
+ * Automatically generated file containing build version information.
+ */
+public class MyVersion {
+	public static final String MAVEN_GROUP = "com.your";
+	public static final String MAVEN_NAME = "project_name";
+	public static final String VERSION = "1.0-SNAPSHOT";
+	public static final int GIT_REVISION = 56;
+	public static final String GIT_SHA = "a0e41dd1a068d184009227083fa6ae276ef1846a";
+	public static final String BUILD_DATE = "2018-04-07 09:43:42";
+}
+```
 
-## Tasks
-
-| Task Name   |   Description   |
-| ------------|-----------------|
-| createVersionFile      | Creates the version file |
-| checkForVersionFile    | Checks to see if the version file has been created and throws an exception if not |
-| checkDependsOnSNAPSHOT | If not a SNAPSHOT itself it will fail if there are any dependencies on snapshots  |
-
-## Automatic Invoking
-
-To ensure that your version file is always up to date it's recommended that you make a task that's called before compile invokes it.
+To ensure that your version file is always up to date it's recommended that you invoke this task before the project is compiled.
 
 For a Java project you can do the following:
 ```groovy
@@ -38,6 +41,17 @@ For an Android project here's how you shouold do it:
 ```groovy
 project(':app').preBuild.dependsOn(createVersionFile)
 ```
+
+## Tasks
+
+A complete list of tasks that it adds is shown below.
+
+| Task Name   |   Description   |
+| ------------|-----------------|
+| createVersionFile      | Creates the version file |
+| checkForVersionFile    | Checks to see if the version file has been created and throws an exception if not |
+| checkDependsOnSNAPSHOT | If not a SNAPSHOT itself it will fail if there are any dependencies on snapshots  |
+
 
 ## Developers
 
