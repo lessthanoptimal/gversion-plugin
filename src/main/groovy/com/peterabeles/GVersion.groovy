@@ -40,7 +40,7 @@ class GVersion implements Plugin<Project> {
             throw new RuntimeException("Must set gversion_file_path")
 
         File gversion_file_path = new File(extension.gversion_file_path,
-                extension.gversion_package.replace(".",File.pathSeparator))
+                extension.gversion_package.replace(".",File.separator))
         return gversion_file_path.getPath()
     }
 
