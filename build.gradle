@@ -1,14 +1,28 @@
 apply plugin: 'groovy'
 apply plugin: 'maven'
+apply plugin: "com.gradle.plugin-publish"
 
-group = 'com.peterabeles'
+group = 'com.peterabeles.gversion'
 version = '1.0'
 
 project.archivesBaseName = 'gversion'
 
+
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "com.gradle.publish:plugin-publish-plugin:0.9.10"
+    }
+}
+
 repositories {
     mavenCentral()
     mavenLocal()
+    jcenter()
 
     maven {
         url = "https://oss.sonatype.org/content/repositories/snapshots/"
@@ -22,4 +36,18 @@ dependencies {
 
 task wrapper(type: Wrapper) {
     gradleVersion = '4.3'
+}
+
+pluginBundle {
+    website = 'https://github.com/lessthanoptimal/gversion-plugin'
+    vcsUrl = 'https://github.com/lessthanoptimal/gversion-plugin'
+    description = 'Auto-generates version class file using Git and Gradle'
+    tags = ['version', 'git', 'gradle','auto generate','auto code']
+
+    plugins {
+        greetingsPlugin {
+            id = 'com.peterabeles.gversion'
+            displayName = 'Gradle Auto Generated Version Class Plugin'
+        }
+    }
 }

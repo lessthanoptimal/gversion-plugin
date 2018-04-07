@@ -3,22 +3,15 @@ gversion-plugin is a Gradle plugin for auto generating a version java class. The
 To include the plugin in your project
 
 ```groovy
-apply plugin: 'com.peterabeles.gversion'
- 
-gversion {
-    gversion_file_path = "src/main/java/"
-    gversion_package = "com.your.package"
-    gversion_class_name = "MyVersion"      // optional. If not specified GVersion is used
-    date_format = "yyyy-MM-dd HH:mm:ss"    // optional. This is the default
+plugins {
+  id "com.peterabeles.gversion" version "1.0"
 }
  
-buildscript {
-    repositories {
-        mavenLocal()
-    }
-    dependencies {
-        classpath "com.peterabeles:gversion:1.0"
-    }
+gversion {
+  gversion_file_path = "src/main/java/"
+  gversion_package = "com.your.package"
+  gversion_class_name = "MyVersion"      // optional. If not specified GVersion is used
+  date_format = "yyyy-MM-dd HH:mm:ss"    // optional. This is the default
 }
 ```
 
@@ -45,6 +38,11 @@ For an Android project here's how you shouold do it:
 ```groovy
 project(':app').preBuild.dependsOn(createVersionFile)
 ```
+
+## Developers
+
+To install your own custom version locally type ```./gradlew install```
+
 ## Contact
 
 This plugin is written by Peter Abeles and has been released into the Public Domain. Use github to post bugs and feature requests.
