@@ -27,20 +27,21 @@ import java.text.SimpleDateFormat
 class GVersionExtension {
 //    List javadoc_links = []
 //    String javadoc_bottom_path = "misc/bottom.txt"
-    String gversion_file_path
-    String gversion_package = ""
-    String gversion_class_name = "GVersion"
-    String date_format = "yyyy-MM-dd HH:mm:ss"
+    String srcDir
+    String classPackage = ""
+    String className = "GVersion"
+    String dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+    String timeZone = "UTC"
 }
 
 class GVersion implements Plugin<Project> {
 
     static String gversion_file_path( GVersionExtension extension ) {
-        if(extension.gversion_file_path == null )
+        if(extension.srcDir == null )
             throw new RuntimeException("Must set gversion_file_path")
 
-        File gversion_file_path = new File(extension.gversion_file_path,
-                extension.gversion_package.replace(".",File.separator))
+        File gversion_file_path = new File(extension.srcDir,
+                extension.classPackage.replace(".",File.separator))
         return gversion_file_path.getPath()
     }
 
@@ -117,7 +118,7 @@ class GVersion implements Plugin<Project> {
 
         project.task('checkForVersionFile') {
             doLast {
-                def f = new File(gversion_file_path(extension),extension.gversion_class_name+".java")
+                def f = new File(gversion_file_path(extension),extension.className+".java")
                 if( !f.exists() ) {
                     throw new RuntimeException("GVersion.java does not exist. Call 'createVersionFile'")
                 }
@@ -151,25 +152,29 @@ class GVersion implements Plugin<Project> {
                     git_sha = "UNKNOWN"
                 }
 
-                def formatter = new SimpleDateFormat(extension.date_format)
-                def date_string = formatter.format(new Date())
+                def unix_time = System.currentTimeMillis()
+                def tz = TimeZone.getTimeZone( extension.timeZone )
+                def formatter = new SimpleDateFormat(extension.dateFormat)
+                formatter.setTimeZone(tz)
+                String date_string = formatter.format(new Date(unix_time))
 
-                def f = new File(gversion_file_path,extension.gversion_class_name+".java")
+                def f = new File(gversion_file_path,extension.className+".java")
                 def writer = new FileWriter(f);
-                if( extension.gversion_package.size() > 0 ) {
-                    writer << "package $extension.gversion_package;\n"
+                if( extension.classPackage.size() > 0 ) {
+                    writer << "package $extension.classPackage;\n"
                     writer << "\n\n"
                 }
                 writer << "/**\n"
                 writer << " * Automatically generated file containing build version information.\n"
                 writer << " */\n"
-                writer << "public class "+extension.gversion_class_name+" {\n"
+                writer << "public class "+extension.className+" {\n"
                 writer << "\tpublic static final String MAVEN_GROUP = \"$project.group\";\n"
                 writer << "\tpublic static final String MAVEN_NAME = \"$project.name\";\n"
                 writer << "\tpublic static final String VERSION = \"$project.version\";\n"
                 writer << "\tpublic static final int GIT_REVISION = $git_revision;\n"
                 writer << "\tpublic static final String GIT_SHA = \"$git_sha\";\n"
                 writer << "\tpublic static final String BUILD_DATE = \"$date_string\";\n"
+                writer << "\tpublic static final long BUILD_UNIX_TIME = "+unix_time+"L;\n"
                 writer << "}"
                 writer.flush()
                 writer.close()
