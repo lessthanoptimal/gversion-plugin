@@ -4,6 +4,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.UnknownProjectException
 
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 class GVersionExtension {
@@ -113,8 +114,11 @@ class GVersion implements Plugin<Project> {
                 def gversion_file_path = gversion_file_path(extension)
                 println("createVersionFile called. Path "+gversion_file_path)
 
-                def git_revision
-                def git_sha
+                def tz = TimeZone.getTimeZone( extension.timeZone )
+
+                def git_revision = -1
+                def git_sha = "UNKNOWN"
+                def git_date = "UNKNOWN"
 
                 try {
                     def proc = 'git rev-list --count HEAD'.execute()
@@ -123,19 +127,34 @@ class GVersion implements Plugin<Project> {
                     if( proc.exitValue() != 0 )
                         throw new IOException();
                     git_revision = proc.text.trim()
-                    proc = 'git rev-parse HEAD'.execute()
+                } catch (IOException ignore) {}
+
+                try {
+                    def proc = 'git rev-parse HEAD'.execute()
                     proc.consumeProcessErrorStream(new StringBuffer())
                     proc.waitFor()
                     if( proc.exitValue() != 0 )
                         throw new IOException()
                     git_sha = proc.text.trim()
-                } catch (IOException ignore) {
-                    git_revision = -1
-                    git_sha = "UNKNOWN"
-                }
+                } catch (IOException ignore) {}
+
+                try {
+                    def proc = 'git show -s --format=%cI HEAD'.execute()
+                    proc.consumeProcessErrorStream(new StringBuffer())
+                    proc.waitFor()
+                    if( proc.exitValue() != 0 )
+                        throw new IOException()
+                    git_date = proc.text.trim()
+
+                    // Let's convert this from local to the desired time zone and adjust the date format
+                    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
+                    Date java_data = formatter.parse(git_date)
+                    formatter = new SimpleDateFormat(extension.dateFormat)
+                    formatter.setTimeZone(tz)
+                    git_date = formatter.format(java_data)
+                } catch (IOException ignore) {}
 
                 def unix_time = System.currentTimeMillis()
-                def tz = TimeZone.getTimeZone( extension.timeZone )
                 def formatter = new SimpleDateFormat(extension.dateFormat)
                 formatter.setTimeZone(tz)
                 String date_string = formatter.format(new Date(unix_time))
@@ -155,6 +174,7 @@ class GVersion implements Plugin<Project> {
                 writer << "\tpublic static final String VERSION = \"$project.version\";\n"
                 writer << "\tpublic static final int GIT_REVISION = $git_revision;\n"
                 writer << "\tpublic static final String GIT_SHA = \"$git_sha\";\n"
+                writer << "\tpublic static final String GIT_DATE = \"$git_date\";\n"
                 writer << "\tpublic static final String BUILD_DATE = \"$date_string\";\n"
                 writer << "\tpublic static final long BUILD_UNIX_TIME = "+unix_time+"L;\n"
                 writer << "}"
