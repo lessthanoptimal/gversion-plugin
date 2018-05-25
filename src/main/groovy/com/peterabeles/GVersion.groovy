@@ -19,13 +19,15 @@ class GVersionExtension {
 
 class GVersion implements Plugin<Project> {
 
-    static String gversion_file_path( GVersionExtension extension ) {
+    static String gversion_file_path( Project project , GVersionExtension extension ) {
         if(extension.srcDir == null )
             throw new RuntimeException("Must set gversion_file_path")
 
+        String project_path = project.file(".").path
+
         File gversion_file_path = new File(extension.srcDir,
                 extension.classPackage.replace(".",File.separator))
-        return gversion_file_path.getPath()
+        return new File(project_path,gversion_file_path.path).getPath()
     }
 
     void apply(Project project) {
@@ -101,7 +103,7 @@ class GVersion implements Plugin<Project> {
 
         project.task('checkForVersionFile') {
             doLast {
-                def f = new File(gversion_file_path(extension),extension.className+".java")
+                def f = new File(gversion_file_path(project,extension),extension.className+".java")
                 if( !f.exists() ) {
                     throw new RuntimeException("GVersion.java does not exist. Call 'createVersionFile'")
                 }
@@ -111,7 +113,7 @@ class GVersion implements Plugin<Project> {
         // Creates a resource file containing build information
         project.task('createVersionFile'){
             doLast {
-                def gversion_file_path = gversion_file_path(extension)
+                def gversion_file_path = gversion_file_path(project,extension)
                 println("createVersionFile called. Path "+gversion_file_path)
 
                 def tz = TimeZone.getTimeZone( extension.timeZone )

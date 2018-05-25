@@ -1,3 +1,8 @@
+## Version 1.2.1
+
+- Can be invoked from any project directory now
+  * Project path is already relative to the project root directory
+
 ## Version 1.2
 
 - Changed software license to be Unlicense and MIT
