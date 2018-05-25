@@ -1,3 +1,8 @@
+## Version 1.2.2
+
+- Found a scenario where the previous fix failed
+  * Now correctly gets the root project
+
 ## Version 1.2.1
 
 - Can be invoked from any project directory now

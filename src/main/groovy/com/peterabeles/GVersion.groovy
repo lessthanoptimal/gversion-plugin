@@ -23,7 +23,8 @@ class GVersion implements Plugin<Project> {
         if(extension.srcDir == null )
             throw new RuntimeException("Must set gversion_file_path")
 
-        String project_path = project.file(".").path
+        String project_path = project.rootProject.file(".").path
+//        System.out.println(project_path)
 
         File gversion_file_path = new File(extension.srcDir,
                 extension.classPackage.replace(".",File.separator))
