@@ -2,6 +2,9 @@
 
 - Properly closing stream. No more error messages
 - Added time out on running a process
+- NOTE: You might need to kill the Gradle daemon to make it go away. 
+  It seems to be caching the old plugin and using that instead of the new one
+  ./gradlew --kill
 
 ## Version 1.2.2
 
