@@ -1,6 +1,7 @@
-## Version 1.2.3
+## Version 1.2.3 and 1.2.4
 
 - Properly closing stream. No more error messages
+- Added time out on running a process
 
 ## Version 1.2.2
 

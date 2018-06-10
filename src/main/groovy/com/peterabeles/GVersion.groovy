@@ -35,14 +35,14 @@ class GVersion implements Plugin<Project> {
         def proc = command.execute()
         try {
             proc.consumeProcessErrorStream(new StringBuffer())
-            proc.waitFor()
+            proc.waitForOrKill(5000)
             if( proc.exitValue() != 0 )
                 return DEFAULT;
             return proc.text.trim()
         } catch (IOException ignore) {
             return DEFAULT;
         } finally {
-            proc.destroy()
+            proc.closeStreams()
         }
     }
 
