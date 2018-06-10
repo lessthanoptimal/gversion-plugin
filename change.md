@@ -1,3 +1,7 @@
+## Version 1.2.3
+
+- Properly closing stream. No more error messages
+
 ## Version 1.2.2
 
 - Found a scenario where the previous fix failed

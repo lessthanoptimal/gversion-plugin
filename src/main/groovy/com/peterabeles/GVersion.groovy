@@ -31,6 +31,21 @@ class GVersion implements Plugin<Project> {
         return new File(project_path,gversion_file_path.path).getPath()
     }
 
+    static String executeGetOutput( String command , String DEFAULT ) {
+        def proc = command.execute()
+        try {
+            proc.consumeProcessErrorStream(new StringBuffer())
+            proc.waitFor()
+            if( proc.exitValue() != 0 )
+                return DEFAULT;
+            return proc.text.trim()
+        } catch (IOException ignore) {
+            return DEFAULT;
+        } finally {
+            proc.destroy()
+        }
+    }
+
     void apply(Project project) {
         // Add the 'greeting' extension object
         def extension = project.extensions.create('gversion', GVersionExtension)
@@ -119,43 +134,18 @@ class GVersion implements Plugin<Project> {
 
                 def tz = TimeZone.getTimeZone( extension.timeZone )
 
-                def git_revision = -1
-                def git_sha = "UNKNOWN"
-                def git_date = "UNKNOWN"
+                def git_revision = executeGetOutput('git rev-list --count HEAD',"-1")
+                def git_sha = executeGetOutput('git rev-parse HEAD',"UNKNOWN")
+                def git_date = executeGetOutput('git show -s --format=%cI HEAD',"UNKNOWN")
 
-                try {
-                    def proc = 'git rev-list --count HEAD'.execute()
-                    proc.consumeProcessErrorStream(new StringBuffer())
-                    proc.waitFor()
-                    if( proc.exitValue() != 0 )
-                        throw new IOException();
-                    git_revision = proc.text.trim()
-                } catch (IOException ignore) {}
-
-                try {
-                    def proc = 'git rev-parse HEAD'.execute()
-                    proc.consumeProcessErrorStream(new StringBuffer())
-                    proc.waitFor()
-                    if( proc.exitValue() != 0 )
-                        throw new IOException()
-                    git_sha = proc.text.trim()
-                } catch (IOException ignore) {}
-
-                try {
-                    def proc = 'git show -s --format=%cI HEAD'.execute()
-                    proc.consumeProcessErrorStream(new StringBuffer())
-                    proc.waitFor()
-                    if( proc.exitValue() != 0 )
-                        throw new IOException()
-                    git_date = proc.text.trim()
-
+                if( !git_date.equals("UNKNOWN")) {
                     // Let's convert this from local to the desired time zone and adjust the date format
                     DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
                     Date java_data = formatter.parse(git_date)
                     formatter = new SimpleDateFormat(extension.dateFormat)
                     formatter.setTimeZone(tz)
                     git_date = formatter.format(java_data)
-                } catch (IOException ignore) {}
+                }
 
                 def unix_time = System.currentTimeMillis()
                 def formatter = new SimpleDateFormat(extension.dateFormat)
