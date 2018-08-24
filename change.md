@@ -1,3 +1,9 @@
+## 1.2.5
+
+- Can get date from git version 1
+  * Useful on older systems
+- Gracefully handles exception when parsing date fails
+
 ## Version 1.2.3 and 1.2.4
 
 - Properly closing stream. No more error messages

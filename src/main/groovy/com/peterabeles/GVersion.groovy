@@ -40,10 +40,30 @@ class GVersion implements Plugin<Project> {
                 return DEFAULT;
             return proc.text.trim()
         } catch (IOException ignore) {
-            return DEFAULT;
+            return DEFAULT
         } finally {
             proc.closeStreams()
         }
+    }
+
+    static int[] parseGitVersion( String text ) {
+        int []version = new int[3]
+
+        if( text == null )
+            return version
+        String []words = text.split("\\s+")
+        if( words.length != 3 )
+            return version
+
+        words = words[2].split("\\.")
+        if( words.length != 3 )
+            return version
+
+        version[0] = Integer.parseInt(words[0])
+        version[1] = Integer.parseInt(words[1])
+        version[2] = Integer.parseInt(words[2])
+
+        return version
     }
 
     void apply(Project project) {
@@ -129,22 +149,38 @@ class GVersion implements Plugin<Project> {
         // Creates a resource file containing build information
         project.task('createVersionFile'){
             doLast {
-                def gversion_file_path = gversion_file_path(project,extension)
-                println("createVersionFile called. Path "+gversion_file_path)
+                def gversion_file_path = gversion_file_path(project, extension)
+                println("createVersionFile called. Path " + gversion_file_path)
 
-                def tz = TimeZone.getTimeZone( extension.timeZone )
+                def tz = TimeZone.getTimeZone(extension.timeZone)
 
-                def git_revision = executeGetOutput('git rev-list --count HEAD',"-1")
-                def git_sha = executeGetOutput('git rev-parse HEAD',"UNKNOWN")
-                def git_date = executeGetOutput('git show -s --format=%cI HEAD',"UNKNOWN")
+                def version_of_git = parseGitVersion(executeGetOutput('git version', "UNKNOWN"))
+//                println("  git version "+version_of_git[0]+"."+version_of_git[1]+"."+version_of_git[2])
 
+                def git_revision = executeGetOutput('git rev-list --count HEAD', "-1")
+                def git_sha = executeGetOutput('git rev-parse HEAD', "UNKNOWN")
+                def git_date
+                def date_format
+
+                if (version_of_git[0] == 1) {
+                    date_format = "yyyy-MM-dd HH:mm:ss Z"
+                    git_date = executeGetOutput('git show -s --format=%ci HEAD', "UNKNOWN")
+                } else {
+                    date_format = "yyyy-MM-dd'T'HH:mm:ssXXX"
+                    git_date = executeGetOutput('git show -s --format=%cI HEAD', "UNKNOWN")
+                }
                 if( !git_date.equals("UNKNOWN")) {
-                    // Let's convert this from local to the desired time zone and adjust the date format
-                    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX")
-                    Date java_data = formatter.parse(git_date)
-                    formatter = new SimpleDateFormat(extension.dateFormat)
-                    formatter.setTimeZone(tz)
-                    git_date = formatter.format(java_data)
+                    try {
+                        // Let's convert this from local to the desired time zone and adjust the date format
+                        DateFormat formatter = new SimpleDateFormat(date_format)
+                        Date java_data = formatter.parse(git_date)
+                        formatter = new SimpleDateFormat(extension.dateFormat)
+                        formatter.setTimeZone(tz)
+                        git_date = formatter.format(java_data)
+                    } catch( RuntimeException e ) {
+                        e.printStackTrace()
+                        git_date = "UNKNOWN"
+                    }
                 }
 
                 def unix_time = System.currentTimeMillis()
