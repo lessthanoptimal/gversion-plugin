@@ -41,7 +41,7 @@ For a Java project you can do the following:
 project.compileJava.dependsOn(createVersionFile)
 ```
 
-For an Android project here's how you shouold do it:
+For an Android project here's how you should do it:
 ```groovy
 project(':app').preBuild.dependsOn(createVersionFile)
 ```
