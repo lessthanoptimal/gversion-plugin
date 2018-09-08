@@ -152,6 +152,15 @@ class GVersion implements Plugin<Project> {
                 def gversion_file_path = gversion_file_path(project, extension)
                 println("createVersionFile called. Path " + gversion_file_path)
 
+                // Make sure the output directory exists. If not create it
+                if( !new File(gversion_file_path).exists() ) {
+                    if( !new File(gversion_file_path).mkdirs() ) {
+                        throw new RuntimeException("Failed to make path: "+gversion_file_path)
+                    } else {
+                        println("Path did not exist. Created "+gversion_file_path)
+                    }
+                }
+
                 def tz = TimeZone.getTimeZone(extension.timeZone)
 
                 def version_of_git = parseGitVersion(executeGetOutput('git version', "UNKNOWN"))

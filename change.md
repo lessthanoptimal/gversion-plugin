@@ -1,3 +1,7 @@
+## 1.2.6
+
+- Creates output directory if it does not already exist
+
 ## 1.2.5
 
 - Can get date from git version 1
