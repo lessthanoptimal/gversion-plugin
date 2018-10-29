@@ -1,3 +1,7 @@
+## 1.2.7
+
+- Debug flag to print out extra information
+
 ## 1.2.6
 
 - Creates output directory if it does not already exist

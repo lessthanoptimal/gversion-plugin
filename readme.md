@@ -5,7 +5,7 @@ Add the following to include gversion-plugin in your project.
 
 ```groovy
 plugins {
-  id "com.peterabeles.gversion" version "1.2.6"
+  id "com.peterabeles.gversion" version "1.2.7"
 }
  
 gversion {
@@ -14,6 +14,7 @@ gversion {
   className    = "MyVersion"                // optional. If not specified GVersion is used
   dateFormat   = "yyyy-MM-dd'T'HH:mm:ss'Z'" // optional. This is the default
   timeZone     = "UTC"                      // optional. UTC is default
+  debug        = false                      // optional. print out extra debug information
 }
 ```
 

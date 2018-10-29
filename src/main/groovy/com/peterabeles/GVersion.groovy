@@ -15,9 +15,12 @@ class GVersionExtension {
     String className = "GVersion"
     String dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
     String timeZone = "UTC"
+    boolean debug = false
 }
 
 class GVersion implements Plugin<Project> {
+
+    GVersionExtension extension
 
     static String gversion_file_path( Project project , GVersionExtension extension ) {
         if(extension.srcDir == null )
@@ -31,7 +34,7 @@ class GVersion implements Plugin<Project> {
         return new File(project_path,gversion_file_path.path).getPath()
     }
 
-    static String executeGetOutput( String command , String DEFAULT ) {
+    String executeGetOutput( String command , String DEFAULT ) {
         def proc = command.execute()
         try {
             proc.consumeProcessErrorStream(new StringBuffer())
@@ -39,9 +42,13 @@ class GVersion implements Plugin<Project> {
             if( proc.exitValue() != 0 )
                 return DEFAULT;
             return proc.text.trim()
-        } catch (IOException ignore) {
+        } catch (IOException e) {
+            if( extension.debug ) {
+                e.printStackTrace()
+            }
             return DEFAULT
         } finally {
+            proc.destroy()
             proc.closeStreams()
         }
     }
@@ -68,7 +75,7 @@ class GVersion implements Plugin<Project> {
 
     void apply(Project project) {
         // Add the 'greeting' extension object
-        def extension = project.extensions.create('gversion', GVersionExtension)
+        extension = project.extensions.create('gversion', GVersionExtension)
 
 //        project.tasks.create('alljavadoc',JavaDoc){
 ////        task alljavadoc(type: Javadoc) {
@@ -187,7 +194,10 @@ class GVersion implements Plugin<Project> {
                         formatter.setTimeZone(tz)
                         git_date = formatter.format(java_data)
                     } catch( RuntimeException e ) {
-                        e.printStackTrace()
+                        if( extension.debug ) {
+                            e.printStackTrace()
+                        }
+
                         git_date = "UNKNOWN"
                     }
                 }
