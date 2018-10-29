@@ -1,9 +1,9 @@
-## 1.2.9
+## 1.3.0
 
 - For some unknown reason on an odroid device the working directory was
   not the project directory and instead the daemon's directory.
 
-## 1.2.7 and 1.2.8
+## 1.2.7 to 1.2.9
 
 - Debug flag to print out extra information
 

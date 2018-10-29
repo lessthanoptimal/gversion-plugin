@@ -5,7 +5,7 @@ Add the following to include gversion-plugin in your project.
 
 ```groovy
 plugins {
-  id "com.peterabeles.gversion" version "1.2.9"
+  id "com.peterabeles.gversion" version "1.3.0"
 }
  
 gversion {
