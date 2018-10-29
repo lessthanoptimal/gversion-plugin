@@ -41,9 +41,10 @@ class GVersion implements Plugin<Project> {
             proc.waitForOrKill(5000)
             if( proc.exitValue() != 0 ) {
                 if( extension.debug ) {
-                    System.err.println("command returned non-zero value: "+proc.exitValue());
-                    System.err.println("command="+command)
-                    System.err.println("text="+proc.text.trim())
+                    System.err.println("command returned non-zero value: "+proc.exitValue())
+                    System.err.println("pwd     = "+new File(".").getAbsolutePath())
+                    System.err.println("command = "+command)
+                    System.err.println("output  = "+proc.text.trim())
                 }
                 return DEFAULT
             }
