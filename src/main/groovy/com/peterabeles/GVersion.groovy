@@ -39,16 +39,22 @@ class GVersion implements Plugin<Project> {
         try {
             proc.consumeProcessErrorStream(new StringBuffer())
             proc.waitForOrKill(5000)
-            if( proc.exitValue() != 0 )
-                return DEFAULT;
+            proc.destroy()
+            if( proc.exitValue() != 0 ) {
+                if( extension.debug ) {
+                    System.err.println("command returned non-zero value: "+proc.exitValue());
+                    System.err.println("command="+command)
+                    System.err.println("text="+proc.text.trim())
+                }
+                return DEFAULT
+            }
             return proc.text.trim()
         } catch (IOException e) {
             if( extension.debug ) {
-                e.printStackTrace()
+                e.printStackTrace(System.err)
             }
             return DEFAULT
         } finally {
-            proc.destroy()
             proc.closeStreams()
         }
     }
@@ -156,6 +162,10 @@ class GVersion implements Plugin<Project> {
         // Creates a resource file containing build information
         project.task('createVersionFile'){
             doLast {
+                if( extension.debug ) {
+                    System.out.println("gversion.debug=true")
+                }
+
                 def gversion_file_path = gversion_file_path(project, extension)
                 println("createVersionFile called. Path " + gversion_file_path)
 
@@ -195,7 +205,7 @@ class GVersion implements Plugin<Project> {
                         git_date = formatter.format(java_data)
                     } catch( RuntimeException e ) {
                         if( extension.debug ) {
-                            e.printStackTrace()
+                            e.printStackTrace(System.err)
                         }
 
                         git_date = "UNKNOWN"

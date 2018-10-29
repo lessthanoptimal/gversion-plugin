@@ -1,4 +1,4 @@
-## 1.2.7
+## 1.2.7 and 1.28
 
 - Debug flag to print out extra information
 
