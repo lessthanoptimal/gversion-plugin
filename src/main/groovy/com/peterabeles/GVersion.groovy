@@ -162,8 +162,12 @@ class GVersion implements Plugin<Project> {
         // Creates a resource file containing build information
         project.task('createVersionFile'){
             doLast {
+                // For some strange reasons it was using the daemon's home directory instead of the projectes!
+                System.setProperty( "user.dir", project.projectDir.toString() )
+
                 if( extension.debug ) {
-                    System.out.println("gversion.debug=true")
+                    println "gversion.debug=true"
+                    println  "project dir:  "+ System.getProperty("user.dir")
                 }
 
                 def gversion_file_path = gversion_file_path(project, extension)
