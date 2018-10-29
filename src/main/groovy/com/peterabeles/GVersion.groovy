@@ -35,7 +35,7 @@ class GVersion implements Plugin<Project> {
     }
 
     String executeGetOutput( String command , String DEFAULT ) {
-        def proc = command.execute()
+        def proc = command.execute(null,new File(System.getProperty("user.dir")))
         try {
             proc.consumeProcessErrorStream(new StringBuffer())
             proc.waitForOrKill(5000)
@@ -167,7 +167,8 @@ class GVersion implements Plugin<Project> {
 
                 if( extension.debug ) {
                     println "gversion.debug=true"
-                    println  "project dir:  "+ System.getProperty("user.dir")
+                    println "project dir:   "+ System.getProperty("user.dir")
+                    println "pwd            "+ executeGetOutput("pwd","pwd failed")
                 }
 
                 def gversion_file_path = gversion_file_path(project, extension)
