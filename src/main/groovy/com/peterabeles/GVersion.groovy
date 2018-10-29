@@ -39,7 +39,6 @@ class GVersion implements Plugin<Project> {
         try {
             proc.consumeProcessErrorStream(new StringBuffer())
             proc.waitForOrKill(5000)
-            proc.destroy()
             if( proc.exitValue() != 0 ) {
                 if( extension.debug ) {
                     System.err.println("command returned non-zero value: "+proc.exitValue());
