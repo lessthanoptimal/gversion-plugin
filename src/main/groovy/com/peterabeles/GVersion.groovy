@@ -168,7 +168,7 @@ class GVersion implements Plugin<Project> {
                 if( extension.debug ) {
                     println "gversion.debug=true"
                     println "project dir:   "+ System.getProperty("user.dir")
-                    println "pwd            "+ executeGetOutput("pwd","pwd failed")
+//                    println "pwd            "+ executeGetOutput("pwd","pwd failed")
                 }
 
                 def gversion_file_path = gversion_file_path(project, extension)
