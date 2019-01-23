@@ -1,3 +1,7 @@
+## 1.4.0
+
+- Support for multiple languages. Java and Kotlin
+
 ## 1.3.0
 
 - For some unknown reason on an odroid device the working directory was

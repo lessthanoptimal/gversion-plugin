@@ -1,11 +1,13 @@
-gversion-plugin is a Gradle plugin for auto generating a version java class. The class will include information which can only be obtained at compile time, such as build time, git SHA, and Gradle version. 
-Command line applications are used to gather most of this information. If a command line operation fails a default value will be used instead. This has been tested in Linux, Windows, and Mac OS X.
+gversion-plugin is a Gradle plugin for auto generating a version class in multiple JVM Languages. Currently
+it support Java and Kotlin. The class will include information which can only be obtained at compile time, such as 
+build time, git SHA, and Gradle version. Command line applications are used to gather most of this information. 
+If a command line operation fails a default value will be used instead. This has been tested in Linux, Windows, and Mac OS X.
 
 Add the following to include gversion-plugin in your project.
 
 ```groovy
 plugins {
-  id "com.peterabeles.gversion" version "1.3.0"
+  id "com.peterabeles.gversion" version "1.4.0"
 }
  
 gversion {
@@ -15,8 +17,10 @@ gversion {
   dateFormat   = "yyyy-MM-dd'T'HH:mm:ss'Z'" // optional. This is the default
   timeZone     = "UTC"                      // optional. UTC is default
   debug        = false                      // optional. print out extra debug information
+  language     = "java"                     // optional. Can be Java or Kotlin, case insensitive
 }
 ```
+
 
 After you invoke the Gradle task 'createVersionFile' it will create a class at src/main/java/com/your/project/MyVersion.java.
 ```java

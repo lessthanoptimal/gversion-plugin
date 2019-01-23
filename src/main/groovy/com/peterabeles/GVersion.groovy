@@ -7,6 +7,19 @@ import org.gradle.api.UnknownProjectException
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
+enum Language {
+    JAVA,
+    KOTLIN;
+
+    static Language convert( String name ) {
+        switch( name.toUpperCase() ) {
+            case "JAVA": return JAVA
+            case "KOTLIN": return KOTLIN
+        }
+        throw new IllegalArgumentException("Unknown language. "+name)
+    }
+}
+
 class GVersionExtension {
 //    List javadoc_links = []
 //    String javadoc_bottom_path = "misc/bottom.txt"
@@ -15,6 +28,7 @@ class GVersionExtension {
     String className = "GVersion"
     String dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
     String timeZone = "UTC"
+    String language = "Java"
     boolean debug = false
 }
 
@@ -163,11 +177,11 @@ class GVersion implements Plugin<Project> {
         project.task('createVersionFile'){
             doLast {
                 // For some strange reasons it was using the daemon's home directory instead of the projectes!
-                System.setProperty( "user.dir", project.projectDir.toString() )
+                System.setProperty("user.dir", project.projectDir.toString())
 
-                if( extension.debug ) {
+                if (extension.debug) {
                     println "gversion.debug=true"
-                    println "project dir:   "+ System.getProperty("user.dir")
+                    println "project dir:   " + System.getProperty("user.dir")
 //                    println "pwd            "+ executeGetOutput("pwd","pwd failed")
                 }
 
@@ -175,11 +189,11 @@ class GVersion implements Plugin<Project> {
                 println("createVersionFile called. Path " + gversion_file_path)
 
                 // Make sure the output directory exists. If not create it
-                if( !new File(gversion_file_path).exists() ) {
-                    if( !new File(gversion_file_path).mkdirs() ) {
-                        throw new RuntimeException("Failed to make path: "+gversion_file_path)
+                if (!new File(gversion_file_path).exists()) {
+                    if (!new File(gversion_file_path).mkdirs()) {
+                        throw new RuntimeException("Failed to make path: " + gversion_file_path)
                     } else {
-                        println("Path did not exist. Created "+gversion_file_path)
+                        println("Path did not exist. Created " + gversion_file_path)
                     }
                 }
 
@@ -200,7 +214,7 @@ class GVersion implements Plugin<Project> {
                     date_format = "yyyy-MM-dd'T'HH:mm:ssXXX"
                     git_date = executeGetOutput('git show -s --format=%cI HEAD', "UNKNOWN")
                 }
-                if( !git_date.equals("UNKNOWN")) {
+                if (!git_date.equals("UNKNOWN")) {
                     try {
                         // Let's convert this from local to the desired time zone and adjust the date format
                         DateFormat formatter = new SimpleDateFormat(date_format)
@@ -208,8 +222,8 @@ class GVersion implements Plugin<Project> {
                         formatter = new SimpleDateFormat(extension.dateFormat)
                         formatter.setTimeZone(tz)
                         git_date = formatter.format(java_data)
-                    } catch( RuntimeException e ) {
-                        if( extension.debug ) {
+                    } catch (RuntimeException e) {
+                        if (extension.debug) {
                             e.printStackTrace(System.err)
                         }
 
@@ -222,27 +236,53 @@ class GVersion implements Plugin<Project> {
                 formatter.setTimeZone(tz)
                 String date_string = formatter.format(new Date(unix_time))
 
-                def f = new File(gversion_file_path,extension.className+".java")
-                def writer = new FileWriter(f);
-                if( extension.classPackage.size() > 0 ) {
-                    writer << "package $extension.classPackage;\n"
-                    writer << "\n\n"
+                Language language = Language.convert(extension.language)
+
+                if (language == Language.JAVA) {
+                    def f = new File(gversion_file_path, extension.className + ".java")
+                    def writer = new FileWriter(f)
+                    if (extension.classPackage.size() > 0) {
+                        writer << "package $extension.classPackage;\n"
+                        writer << "\n\n"
+                    }
+                    writer << "/**\n"
+                    writer << " * Automatically generated file containing build version information.\n"
+                    writer << " */\n"
+                    writer << "public class " + extension.className + " {\n"
+                    writer << "\tpublic static final String MAVEN_GROUP = \"$project.group\";\n"
+                    writer << "\tpublic static final String MAVEN_NAME = \"$project.name\";\n"
+                    writer << "\tpublic static final String VERSION = \"$project.version\";\n"
+                    writer << "\tpublic static final int GIT_REVISION = $git_revision;\n"
+                    writer << "\tpublic static final String GIT_SHA = \"$git_sha\";\n"
+                    writer << "\tpublic static final String GIT_DATE = \"$git_date\";\n"
+                    writer << "\tpublic static final String BUILD_DATE = \"$date_string\";\n"
+                    writer << "\tpublic static final long BUILD_UNIX_TIME = " + unix_time + "L;\n"
+                    writer << "}"
+                    writer.flush()
+                    writer.close()
+                } else if( language == Language.KOTLIN ) {
+                    def f = new File(gversion_file_path, extension.className + ".kt")
+                    def writer = new FileWriter(f)
+                    if (extension.classPackage.size() > 0) {
+                        writer << "package $extension.classPackage;\n"
+                        writer << "\n\n"
+                    }
+                    writer << "/**\n"
+                    writer << " * Automatically generated file containing build version information.\n"
+                    writer << " */\n"
+                    writer << "const val MAVEN_GROUP : String = \"$project.group\"\n"
+                    writer << "const val MAVEN_NAME : String = \"$project.name\"\n"
+                    writer << "const val VERSION : String = \"$project.version\"\n"
+                    writer << "const val GIT_REVISION : Int = $git_revision\n"
+                    writer << "const val GIT_SHA : String = \"$git_sha\"\n"
+                    writer << "const val GIT_DATE : String = \"$git_date\"\n"
+                    writer << "const val BUILD_DATE : String = \"$date_string\"\n"
+                    writer << "const val BUILD_UNIX_TIME : Long = " + unix_time + "L\n"
+                    writer.flush()
+                    writer.close()
+                } else {
+                    throw new RuntimeException("BUG! Unknown language "+language)
                 }
-                writer << "/**\n"
-                writer << " * Automatically generated file containing build version information.\n"
-                writer << " */\n"
-                writer << "public class "+extension.className+" {\n"
-                writer << "\tpublic static final String MAVEN_GROUP = \"$project.group\";\n"
-                writer << "\tpublic static final String MAVEN_NAME = \"$project.name\";\n"
-                writer << "\tpublic static final String VERSION = \"$project.version\";\n"
-                writer << "\tpublic static final int GIT_REVISION = $git_revision;\n"
-                writer << "\tpublic static final String GIT_SHA = \"$git_sha\";\n"
-                writer << "\tpublic static final String GIT_DATE = \"$git_date\";\n"
-                writer << "\tpublic static final String BUILD_DATE = \"$date_string\";\n"
-                writer << "\tpublic static final long BUILD_UNIX_TIME = "+unix_time+"L;\n"
-                writer << "}"
-                writer.flush()
-                writer.close()
             }
         }
 
