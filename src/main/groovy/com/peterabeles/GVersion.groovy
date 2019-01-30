@@ -29,6 +29,8 @@ class GVersionExtension {
     String dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
     String timeZone = "UTC"
     String language = "Java"
+    // If the language allows implicit types should it explicitly state the types?
+    boolean explicitType = false
     boolean debug = false
 }
 
@@ -264,20 +266,25 @@ class GVersion implements Plugin<Project> {
                     def f = new File(gversion_file_path, extension.className + ".kt")
                     def writer = new FileWriter(f)
                     if (extension.classPackage.size() > 0) {
-                        writer << "package $extension.classPackage;\n"
-                        writer << "\n\n"
+                        writer << "package $extension.classPackage\n"
+                        writer << "\n"
                     }
+
+                    def typeString = extension.explicitType ? ": String " : ""
+                    def typeInt = extension.explicitType ? ": Int " : ""
+                    def typeLong = extension.explicitType ? ": Long " : ""
+
                     writer << "/**\n"
                     writer << " * Automatically generated file containing build version information.\n"
                     writer << " */\n"
-                    writer << "const val MAVEN_GROUP : String = \"$project.group\"\n"
-                    writer << "const val MAVEN_NAME : String = \"$project.name\"\n"
-                    writer << "const val VERSION : String = \"$project.version\"\n"
-                    writer << "const val GIT_REVISION : Int = $git_revision\n"
-                    writer << "const val GIT_SHA : String = \"$git_sha\"\n"
-                    writer << "const val GIT_DATE : String = \"$git_date\"\n"
-                    writer << "const val BUILD_DATE : String = \"$date_string\"\n"
-                    writer << "const val BUILD_UNIX_TIME : Long = " + unix_time + "L\n"
+                    writer << "const val MAVEN_GROUP $typeString= \"$project.group\"\n"
+                    writer << "const val MAVEN_NAME $typeString= \"$project.name\"\n"
+                    writer << "const val VERSION $typeString= \"$project.version\"\n"
+                    writer << "const val GIT_REVISION $typeInt= $git_revision\n"
+                    writer << "const val GIT_SHA $typeString= \"$git_sha\"\n"
+                    writer << "const val GIT_DATE $typeString= \"$git_date\"\n"
+                    writer << "const val BUILD_DATE $typeString= \"$date_string\"\n"
+                    writer << "const val BUILD_UNIX_TIME $typeLong= " + unix_time + "L\n"
                     writer.flush()
                     writer.close()
                 } else {

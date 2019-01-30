@@ -18,6 +18,7 @@ gversion {
   timeZone     = "UTC"                      // optional. UTC is default
   debug        = false                      // optional. print out extra debug information
   language     = "java"                     // optional. Can be Java or Kotlin, case insensitive
+  explicitType = false                      // optional. Force types to be explicitly printed
 }
 ```
 

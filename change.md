@@ -1,3 +1,8 @@
+## 1.4.1
+
+- Updated Kotlin based on feedback
+  * By default types are not printed, this change be changed by setting explicitType flag
+
 ## 1.4.0
 
 - Support for multiple languages. Java and Kotlin
