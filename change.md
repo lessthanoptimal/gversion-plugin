@@ -1,3 +1,9 @@
+## 1.5
+
+- Changes to file path
+  * Now it is relative to the sub project it is called in
+  * Global paths are now respected
+
 ## 1.4.1
 
 - Updated Kotlin based on feedback

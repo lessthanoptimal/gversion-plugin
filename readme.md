@@ -7,11 +7,13 @@ Add the following to include gversion-plugin in your project.
 
 ```groovy
 plugins {
-  id "com.peterabeles.gversion" version "1.4.0"
+  id "com.peterabeles.gversion" version "1.5.0"
 }
  
 gversion {
-  srcDir       = "src/main/java/"
+  srcDir       = "src/main/java/"           // path is relative to the sub-project by default
+                                            // Gradle variables can also be used
+                                            // E.g. "${project.rootDir}/module/src/main/java"
   classPackage = "com.your.package"
   className    = "MyVersion"                // optional. If not specified GVersion is used
   dateFormat   = "yyyy-MM-dd'T'HH:mm:ss'Z'" // optional. This is the default

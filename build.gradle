@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: "com.gradle.plugin-publish"
 
 group = 'com.peterabeles.gversion'
-version = '1.4.1'
+version = '1.5.0'
 
 project.archivesBaseName = 'gversion'
 

@@ -42,12 +42,21 @@ class GVersion implements Plugin<Project> {
         if(extension.srcDir == null )
             throw new RuntimeException("Must set gversion_file_path")
 
-        String project_path = project.rootProject.file(".").path
-//        System.out.println(project_path)
+        String relative_path
+
+        if( !new File(extension.srcDir).isAbsolute() ) {
+            if(extension.debug) println("path relative to sub-project")
+            // relative to sub-project
+            relative_path = project.file(".").path
+        } else {
+            if(extension.debug) println("absolute path")
+            // relative to system
+            relative_path = ""
+        }
 
         File gversion_file_path = new File(extension.srcDir,
                 extension.classPackage.replace(".",File.separator))
-        return new File(project_path,gversion_file_path.path).getPath()
+        return new File(relative_path,gversion_file_path.path).getPath()
     }
 
     String executeGetOutput( String command , String DEFAULT ) {
@@ -178,12 +187,14 @@ class GVersion implements Plugin<Project> {
         // Creates a resource file containing build information
         project.task('createVersionFile'){
             doLast {
-                // For some strange reasons it was using the daemon's home directory instead of the projectes!
+                // For some strange reasons it was using the daemon's home directory instead of the project's!
                 System.setProperty("user.dir", project.projectDir.toString())
 
                 if (extension.debug) {
-                    println "gversion.debug=true"
-                    println "project dir:   " + System.getProperty("user.dir")
+                    println "gversion.debug     = true"
+                    println "project.name       " + project.name
+                    println "rootProject path   " + project.rootProject.file(".").path
+                    println "sub-project path   " + project.file(".").path
 //                    println "pwd            "+ executeGetOutput("pwd","pwd failed")
                 }
 
