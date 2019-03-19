@@ -1,3 +1,7 @@
+## 1.5.1
+
+- Java creates a private constructor to hide implicit public one
+
 ## 1.5
 
 - Changes to file path

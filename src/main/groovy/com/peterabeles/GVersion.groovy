@@ -261,7 +261,7 @@ class GVersion implements Plugin<Project> {
                     writer << "/**\n"
                     writer << " * Automatically generated file containing build version information.\n"
                     writer << " */\n"
-                    writer << "public class " + extension.className + " {\n"
+                    writer << "public final class $extension.className {\n"
                     writer << "\tpublic static final String MAVEN_GROUP = \"$project.group\";\n"
                     writer << "\tpublic static final String MAVEN_NAME = \"$project.name\";\n"
                     writer << "\tpublic static final String VERSION = \"$project.version\";\n"
@@ -270,6 +270,8 @@ class GVersion implements Plugin<Project> {
                     writer << "\tpublic static final String GIT_DATE = \"$git_date\";\n"
                     writer << "\tpublic static final String BUILD_DATE = \"$date_string\";\n"
                     writer << "\tpublic static final long BUILD_UNIX_TIME = " + unix_time + "L;\n"
+                    writer << "\n"
+                    writer << "\tprivate $extension.className(){}\n" // hide implicit public constructor
                     writer << "}"
                     writer.flush()
                     writer.close()
