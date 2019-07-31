@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: "com.gradle.plugin-publish"
 
 group = 'com.peterabeles.gversion'
-version = '1.5.1'
+version = '1.5.2'
 
 project.archivesBaseName = 'gversion'
 
@@ -31,6 +31,13 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
+
+    testImplementation(
+            'org.junit.jupiter:junit-jupiter-api:5.4.0'
+    )
+    testRuntimeOnly(
+            'org.junit.jupiter:junit-jupiter-engine:5.4.0'
+    )
 }
 
 task wrapper(type: Wrapper) {

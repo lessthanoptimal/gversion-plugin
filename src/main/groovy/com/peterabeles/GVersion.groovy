@@ -94,12 +94,12 @@ class GVersion implements Plugin<Project> {
             return version
 
         words = words[2].split("\\.")
-        if( words.length != 3 )
+        if( words.length < 1 )
             return version
 
-        version[0] = Integer.parseInt(words[0])
-        version[1] = Integer.parseInt(words[1])
-        version[2] = Integer.parseInt(words[2])
+        for (int i = 0; i < Math.min(version.length,words.length); i++) {
+            version[i] = Integer.parseInt(words[i])
+        }
 
         return version
     }

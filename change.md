@@ -1,3 +1,7 @@
+## 1.5.2
+
+- Fixed issue when git has a longer version
+
 ## 1.5.1
 
 - Java creates a private constructor to hide implicit public one
