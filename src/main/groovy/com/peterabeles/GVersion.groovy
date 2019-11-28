@@ -231,7 +231,7 @@ class GVersion implements Plugin<Project> {
                 def version_of_git = parseGitVersion(executeGetOutput('git version', "UNKNOWN"))
 //                println("  git version "+version_of_git[0]+"."+version_of_git[1]+"."+version_of_git[2])
 
-                def dirty_value = executeGetSuccess('git diff --quiet')
+                def dirty_value = executeGetSuccess('git diff --quiet --ignore-submodules=dirty')
                 def git_revision = executeGetOutput('git rev-list --count HEAD', "-1")
                 def git_sha = executeGetOutput('git rev-parse HEAD', "UNKNOWN")
                 def git_date

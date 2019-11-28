@@ -1,4 +1,4 @@
-## 1.6
+## 1.6.0 and 1.6.2
 
 - Now indicates if the build is dirty, i.e. has uncommitted changes
   * Thanks rbresalier for the suggestion!
