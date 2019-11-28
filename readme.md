@@ -7,7 +7,7 @@ Add the following to include gversion-plugin in your project.
 
 ```groovy
 plugins {
-  id "com.peterabeles.gversion" version "1.5.2"
+  id "com.peterabeles.gversion" version "1.6.0"
 }
  
 gversion {
@@ -39,10 +39,12 @@ public final class MyVersion {
 	public static final String GIT_DATE = "2018-04-10T16:26:44Z";
 	public static final String BUILD_DATE = "2018-04-11T12:19:03Z";
 	public static final long BUILD_UNIX_TIME = 1523449143116L;
-
+	public static final int DIRTY = 0;
 	private MyVersion(){}
 }
 ```
+DIRTY indicates if there are uncommitted versioned files in your repository. 0 means it's clean, 1 means it's
+dirty, and -1 means something went wrong.
 
 To ensure that your version file is always up to date it's recommended that you invoke this task before the project is compiled.
 

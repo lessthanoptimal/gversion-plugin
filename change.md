@@ -1,3 +1,8 @@
+## 1.6
+
+- Now indicates if the build is dirty, i.e. has uncommitted changes
+  * Thanks rbresalier for the suggestion!
+
 ## 1.5.2
 
 - Fixed issue when git has a longer version
@@ -15,7 +20,7 @@
 ## 1.4.1
 
 - Updated Kotlin based on feedback
-  * By default types are not printed, this change be changed by setting explicitType flag
+  * By default, types are not printed. This is configurable by setting the explicitType flag
 
 ## 1.4.0
 

@@ -59,6 +59,22 @@ class GVersion implements Plugin<Project> {
         return new File(relative_path,gversion_file_path.path).getPath()
     }
 
+    int executeGetSuccess( String command ) {
+        def proc = command.execute(null,new File(System.getProperty("user.dir")))
+        try {
+            proc.consumeProcessErrorStream(new StringBuffer())
+            proc.waitForOrKill(5000)
+            return proc.exitValue()
+        } catch (IOException e) {
+            if( extension.debug ) {
+                e.printStackTrace(System.err)
+            }
+            return -1
+        } finally {
+            proc.closeStreams()
+        }
+    }
+
     String executeGetOutput( String command , String DEFAULT ) {
         def proc = command.execute(null,new File(System.getProperty("user.dir")))
         try {
@@ -215,6 +231,7 @@ class GVersion implements Plugin<Project> {
                 def version_of_git = parseGitVersion(executeGetOutput('git version', "UNKNOWN"))
 //                println("  git version "+version_of_git[0]+"."+version_of_git[1]+"."+version_of_git[2])
 
+                def dirty_value = executeGetSuccess('git diff --quiet')
                 def git_revision = executeGetOutput('git rev-list --count HEAD', "-1")
                 def git_sha = executeGetOutput('git rev-parse HEAD', "UNKNOWN")
                 def git_date
@@ -270,6 +287,7 @@ class GVersion implements Plugin<Project> {
                     writer << "\tpublic static final String GIT_DATE = \"$git_date\";\n"
                     writer << "\tpublic static final String BUILD_DATE = \"$date_string\";\n"
                     writer << "\tpublic static final long BUILD_UNIX_TIME = " + unix_time + "L;\n"
+                    writer << "\tpublic static final int DIRTY = " + dirty_value + ";\n"
                     writer << "\n"
                     writer << "\tprivate $extension.className(){}\n" // hide implicit public constructor
                     writer << "}"
@@ -298,6 +316,7 @@ class GVersion implements Plugin<Project> {
                     writer << "const val GIT_DATE $typeString= \"$git_date\"\n"
                     writer << "const val BUILD_DATE $typeString= \"$date_string\"\n"
                     writer << "const val BUILD_UNIX_TIME $typeLong= " + unix_time + "L\n"
+                    writer << "const val DIRTY $typeInt= $dirty_value\n"
                     writer.flush()
                     writer.close()
                 } else {
