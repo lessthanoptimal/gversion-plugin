@@ -191,6 +191,19 @@ class GVersion implements Plugin<Project> {
             }
         }
 
+        // Throw an exception if the repo is dirty and it's a release version
+        project.tasks.create('failDirtyNotSnapshot'){
+            doLast {
+                if (project.version.endsWith("SNAPSHOT"))
+                    return
+
+                def dirty_value = executeGetSuccess('git diff --quiet --ignore-submodules=dirty')
+                if( dirty_value != 0 ) {
+                    throw new Exception("Git dirty check failed. Check in your code!")
+                }
+            }
+        }
+
         project.task('checkForVersionFile') {
             doLast {
                 def f = new File(gversion_file_path(project,extension),extension.className+".java")

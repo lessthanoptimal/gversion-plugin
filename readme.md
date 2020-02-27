@@ -7,7 +7,7 @@ Add the following to include gversion-plugin in your project.
 
 ```groovy
 plugins {
-  id "com.peterabeles.gversion" version "1.6.2"
+  id "com.peterabeles.gversion" version "1.7.0"
 }
  
 gversion {
@@ -67,7 +67,7 @@ A complete list of tasks that it adds is shown below.
 | createVersionFile      | Creates the version file |
 | checkForVersionFile    | Checks to see if the version file has been created and throws an exception if not |
 | checkDependsOnSNAPSHOT | If not a SNAPSHOT itself it will fail if there are any dependencies on snapshots  |
-
+| failDirtyNotSnapshot   | Throws exception if git repo is dirty AND version does not end with SNAPSHOT      |
 
 ## Developers
 

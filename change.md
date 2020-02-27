@@ -1,3 +1,7 @@
+## 1.7.0
+
+- Added failDirtyNotSnapshot() Task
+
 ## 1.6.0 and 1.6.2
 
 - Now indicates if the build is dirty, i.e. has uncommitted changes
