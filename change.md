@@ -1,3 +1,11 @@
+## 1.8.0
+
+- Added current git branch to information
+  * Thanks Blunderchips for the suggestion!
+- Might have finally fixed that annoying error message
+- Added YAML as a language
+- Added ability to change the indent from tab to something else
+
 ## 1.7.0
 
 - Added failDirtyNotSnapshot() Task

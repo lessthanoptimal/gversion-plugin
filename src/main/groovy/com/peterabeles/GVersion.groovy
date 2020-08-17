@@ -8,6 +8,7 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 
 enum Language {
+    YAML,
     JAVA,
     KOTLIN;
 
@@ -15,20 +16,20 @@ enum Language {
         switch( name.toUpperCase() ) {
             case "JAVA": return JAVA
             case "KOTLIN": return KOTLIN
+            case "YAML": return YAML
         }
         throw new IllegalArgumentException("Unknown language. "+name)
     }
 }
 
 class GVersionExtension {
-//    List javadoc_links = []
-//    String javadoc_bottom_path = "misc/bottom.txt"
     String srcDir
     String classPackage = ""
     String className = "GVersion"
     String dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
     String timeZone = "UTC"
     String language = "Java"
+    String indent = "\t"
     // If the language allows implicit types should it explicitly state the types?
     boolean explicitType = false
     boolean debug = false
@@ -62,7 +63,7 @@ class GVersion implements Plugin<Project> {
     int executeGetSuccess( String command ) {
         def proc = command.execute(null,new File(System.getProperty("user.dir")))
         try {
-            proc.consumeProcessErrorStream(new StringBuffer())
+            proc.consumeProcessOutput()
             proc.waitForOrKill(5000)
             return proc.exitValue()
         } catch (IOException e) {
@@ -70,33 +71,31 @@ class GVersion implements Plugin<Project> {
                 e.printStackTrace(System.err)
             }
             return -1
-        } finally {
-            proc.closeStreams()
         }
     }
 
     String executeGetOutput( String command , String DEFAULT ) {
         def proc = command.execute(null,new File(System.getProperty("user.dir")))
         try {
-            proc.consumeProcessErrorStream(new StringBuffer())
+            def output = new StringBuffer()
+            proc.consumeProcessOutput(output,new StringBuffer())
             proc.waitForOrKill(5000)
+            def text = output.toString().trim()
             if( proc.exitValue() != 0 ) {
                 if( extension.debug ) {
                     System.err.println("command returned non-zero value: "+proc.exitValue())
                     System.err.println("pwd     = "+new File(".").getAbsolutePath())
                     System.err.println("command = "+command)
-                    System.err.println("output  = "+proc.text.trim())
+                    System.err.println("output  = "+text)
                 }
                 return DEFAULT
             }
-            return proc.text.trim()
+            return text
         } catch (IOException e) {
             if( extension.debug ) {
                 e.printStackTrace(System.err)
             }
             return DEFAULT
-        } finally {
-            proc.closeStreams()
         }
     }
 
@@ -123,53 +122,6 @@ class GVersion implements Plugin<Project> {
     void apply(Project project) {
         // Add the 'greeting' extension object
         extension = project.extensions.create('gversion', GVersionExtension)
-
-//        project.tasks.create('alljavadoc',JavaDoc){
-////        task alljavadoc(type: Javadoc) {
-//            if( extension.length == 0 ) {
-//                throw new RuntimeException("javadoc_links has not been specified")
-//            }
-//            if( extension.size() == 0 ) {
-//                throw new RuntimeException("project_name needs to be specified")
-//            }
-//
-//            // only include source code in src directory to avoid including 3rd party code which some projects do as a hack
-//            source = javadocProjects.collect { project(it).fileTree('src').include('**/*.java') }
-////    source = javadocProjects.collect { project(it).sourceSets.main.allJava }
-//            classpath = files(javadocProjects.collect { project(it).sourceSets.main.compileClasspath })
-//
-//            destinationDir = file("docs/api")
-//
-//            // Hack for Java 8u121 and beyond. Comment out if running an earlier version of Java
-//            options.addBooleanOption("-allow-script-in-comments", true)
-//
-//            // Add a list of uses of a class to javadoc
-//            options.use = true
-//
-//            configure(options) {
-//                failOnError = false
-//                docTitle = extension.project_name+" JavaDoc ($project.version)"
-//                links = extension.javadoc_links
-//            }
-//
-//            // Work around a Gradle design flaw. It won't copy over files in doc-files
-//            doLast {
-//                copy {
-//                    from javadocProjects.collect { project(it).fileTree('src').include('**/doc-files/*') }
-//                    into destinationDir
-//                }
-//            }
-//
-//        }
-//
-//        task alljavadocWeb() {
-//            doFirst {
-//                alljavadoc.options.bottom = file(extension.javadoc_bottom_path).text
-//                alljavadoc.destinationDir = file("docs/api-web")
-//            }
-//        }
-//        alljavadocWeb.finalizedBy(alljavadoc)
-
 
         project.ext.checkProjectExistsAddToList = { whichProject , list ->
             try {
@@ -247,6 +199,7 @@ class GVersion implements Plugin<Project> {
                 def dirty_value = executeGetSuccess('git diff --quiet --ignore-submodules=dirty')
                 def git_revision = executeGetOutput('git rev-list --count HEAD', "-1")
                 def git_sha = executeGetOutput('git rev-parse HEAD', "UNKNOWN")
+                def git_branch = executeGetOutput('git rev-parse --abbrev-ref HEAD', "UNKNOWN")
                 def git_date
                 def date_format
 
@@ -274,6 +227,7 @@ class GVersion implements Plugin<Project> {
                     }
                 }
 
+                def indent = extension.indent
                 def unix_time = System.currentTimeMillis()
                 def formatter = new SimpleDateFormat(extension.dateFormat)
                 formatter.setTimeZone(tz)
@@ -282,56 +236,68 @@ class GVersion implements Plugin<Project> {
                 Language language = Language.convert(extension.language)
 
                 if (language == Language.JAVA) {
-                    def f = new File(gversion_file_path, extension.className + ".java")
-                    def writer = new FileWriter(f)
-                    if (extension.classPackage.size() > 0) {
-                        writer << "package $extension.classPackage;\n"
-                        writer << "\n\n"
-                    }
-                    writer << "/**\n"
-                    writer << " * Automatically generated file containing build version information.\n"
-                    writer << " */\n"
-                    writer << "public final class $extension.className {\n"
-                    writer << "\tpublic static final String MAVEN_GROUP = \"$project.group\";\n"
-                    writer << "\tpublic static final String MAVEN_NAME = \"$project.name\";\n"
-                    writer << "\tpublic static final String VERSION = \"$project.version\";\n"
-                    writer << "\tpublic static final int GIT_REVISION = $git_revision;\n"
-                    writer << "\tpublic static final String GIT_SHA = \"$git_sha\";\n"
-                    writer << "\tpublic static final String GIT_DATE = \"$git_date\";\n"
-                    writer << "\tpublic static final String BUILD_DATE = \"$date_string\";\n"
-                    writer << "\tpublic static final long BUILD_UNIX_TIME = " + unix_time + "L;\n"
-                    writer << "\tpublic static final int DIRTY = " + dirty_value + ";\n"
-                    writer << "\n"
-                    writer << "\tprivate $extension.className(){}\n" // hide implicit public constructor
-                    writer << "}"
-                    writer.flush()
-                    writer.close()
-                } else if( language == Language.KOTLIN ) {
-                    def f = new File(gversion_file_path, extension.className + ".kt")
-                    def writer = new FileWriter(f)
-                    if (extension.classPackage.size() > 0) {
-                        writer << "package $extension.classPackage\n"
+                    new File(gversion_file_path, extension.className + ".java").withWriter {writer->
+                        if (extension.classPackage.size() > 0) {
+                            writer << "package $extension.classPackage;\n"
+                            writer << "\n\n"
+                        }
+                        writer << "/**\n"
+                        writer << " * Automatically generated file containing build version information.\n"
+                        writer << " */\n"
+                        writer << "public final class $extension.className {\n"
+                        writer << "${indent}public static final String MAVEN_GROUP = \"$project.group\";\n"
+                        writer << "${indent}public static final String MAVEN_NAME = \"$project.name\";\n"
+                        writer << "${indent}public static final String VERSION = \"$project.version\";\n"
+                        writer << "${indent}public static final int GIT_REVISION = $git_revision;\n"
+                        writer << "${indent}public static final String GIT_SHA = \"$git_sha\";\n"
+                        writer << "${indent}public static final String GIT_DATE = \"$git_date\";\n"
+                        writer << "${indent}public static final String GIT_BRANCH = \"$git_branch\";\n"
+                        writer << "${indent}public static final String BUILD_DATE = \"$date_string\";\n"
+                        writer << "${indent}public static final long BUILD_UNIX_TIME = " + unix_time + "L;\n"
+                        writer << "${indent}public static final int DIRTY = " + dirty_value + ";\n"
                         writer << "\n"
+                        writer << "${indent}private $extension.className(){}\n" // hide implicit public constructor
+                        writer << "}"
                     }
+                } else if( language == Language.KOTLIN ) {
+                    new File(gversion_file_path, extension.className + ".kt").withWriter { writer ->
+                        if (extension.classPackage.size() > 0) {
+                            writer << "package $extension.classPackage\n"
+                            writer << "\n"
+                        }
 
-                    def typeString = extension.explicitType ? ": String " : ""
-                    def typeInt = extension.explicitType ? ": Int " : ""
-                    def typeLong = extension.explicitType ? ": Long " : ""
+                        def typeString = extension.explicitType ? ": String " : ""
+                        def typeInt = extension.explicitType ? ": Int " : ""
+                        def typeLong = extension.explicitType ? ": Long " : ""
 
-                    writer << "/**\n"
-                    writer << " * Automatically generated file containing build version information.\n"
-                    writer << " */\n"
-                    writer << "const val MAVEN_GROUP $typeString= \"$project.group\"\n"
-                    writer << "const val MAVEN_NAME $typeString= \"$project.name\"\n"
-                    writer << "const val VERSION $typeString= \"$project.version\"\n"
-                    writer << "const val GIT_REVISION $typeInt= $git_revision\n"
-                    writer << "const val GIT_SHA $typeString= \"$git_sha\"\n"
-                    writer << "const val GIT_DATE $typeString= \"$git_date\"\n"
-                    writer << "const val BUILD_DATE $typeString= \"$date_string\"\n"
-                    writer << "const val BUILD_UNIX_TIME $typeLong= " + unix_time + "L\n"
-                    writer << "const val DIRTY $typeInt= $dirty_value\n"
-                    writer.flush()
-                    writer.close()
+                        writer << "/**\n"
+                        writer << " * Automatically generated file containing build version information.\n"
+                        writer << " */\n"
+                        writer << "const val MAVEN_GROUP $typeString= \"$project.group\"\n"
+                        writer << "const val MAVEN_NAME $typeString= \"$project.name\"\n"
+                        writer << "const val VERSION $typeString= \"$project.version\"\n"
+                        writer << "const val GIT_REVISION $typeInt= $git_revision\n"
+                        writer << "const val GIT_SHA $typeString= \"$git_sha\"\n"
+                        writer << "const val GIT_DATE $typeString= \"$git_date\"\n"
+                        writer << "const val GIT_BRANCH $typeString= \"$git_branch\"\n"
+                        writer << "const val BUILD_DATE $typeString= \"$date_string\"\n"
+                        writer << "const val BUILD_UNIX_TIME $typeLong= " + unix_time + "L\n"
+                        writer << "const val DIRTY $typeInt= $dirty_value\n"
+                    }
+                } else if( language == Language.YAML ) {
+                    new File(gversion_file_path, extension.className + ".yaml").withWriter { writer ->
+                        writer << "---\n"
+                        writer << "MAVEN_GROUP: \"$project.group\"\n"
+                        writer << "MAVEN_NAME: \"$project.name\"\n"
+                        writer << "VERSION: \"$project.version\"\n"
+                        writer << "GIT_REVISION: $git_revision\n"
+                        writer << "GIT_SHA: \"$git_sha\"\n"
+                        writer << "GIT_DATE: \"$git_date\"\n"
+                        writer << "GIT_BRANCH: \"$git_branch\"\n"
+                        writer << "BUILD_DATE: \"$date_string\"\n"
+                        writer << "BUILD_UNIX_TIME: $unix_time\n"
+                        writer << "DIRTY: $dirty_value\n"
+                    }
                 } else {
                     throw new RuntimeException("BUG! Unknown language "+language)
                 }
