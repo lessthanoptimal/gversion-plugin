@@ -1,4 +1,4 @@
-## 1.8.1
+## 1.8.2
 
 - Build jars to use Java 1.8 bytecode
 

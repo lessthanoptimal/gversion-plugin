@@ -3,7 +3,7 @@ apply plugin: 'maven'
 apply plugin: "com.gradle.plugin-publish"
 
 group = 'com.peterabeles.gversion'
-version = '1.8.1'
+version = '1.8.2'
 
 project.archivesBaseName = 'gversion'
 
@@ -30,7 +30,12 @@ dependencies {
     testRuntimeOnly('org.junit.jupiter:junit-jupiter-engine:5.4.0')
 }
 
-compileGroovy {
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+compileJava {
     // Output byte code compatible with Java 8
     options.compilerArgs += ["--release", "8"]
 }
