@@ -1,3 +1,7 @@
+## 1.8.1
+
+- Build jars to use Java 1.8 bytecode
+
 ## 1.8.0
 
 - Added current git branch to information

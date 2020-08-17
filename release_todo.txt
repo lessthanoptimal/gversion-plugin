@@ -1,3 +1,4 @@
 
-1) Update version
-2) ./gradlew publishPlugins
+1) Update version in readme.md
+2) Update version in build.gradle
+3) ./gradlew publishPlugins
