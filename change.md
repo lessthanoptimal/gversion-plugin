@@ -1,6 +1,7 @@
-## 1.8.2
+## 1.8.1 - 1.8.3
 
-- Build jars to use Java 1.8 bytecode
+- Ensure that jars are built using Java 1.8 bytecode even if a newer JDK is used
+- Fixed issue where console output wasn't fully read due to buffering
 
 ## 1.8.0
 

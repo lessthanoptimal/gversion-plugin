@@ -77,10 +77,18 @@ class GVersion implements Plugin<Project> {
     String executeGetOutput( String command , String DEFAULT ) {
         def proc = command.execute(null,new File(System.getProperty("user.dir")))
         try {
-            def output = new StringBuffer()
-            proc.consumeProcessOutput(output,new StringBuffer())
+            def output = new ByteArrayOutputStream(4096)
+            proc.consumeProcessOutput(output,new ByteArrayOutputStream(4096))
             proc.waitForOrKill(5000)
             def text = output.toString().trim()
+            if( text.isBlank() ) {
+                if( extension.debug ) {
+                    System.err.println("command returned an empty string")
+                    System.err.println("pwd     = "+new File(".").getAbsolutePath())
+                    System.err.println("command = "+command)
+                }
+                return DEFAULT
+            }
             if( proc.exitValue() != 0 ) {
                 if( extension.debug ) {
                     System.err.println("command returned non-zero value: "+proc.exitValue())
@@ -258,6 +266,7 @@ class GVersion implements Plugin<Project> {
                         writer << "\n"
                         writer << "${indent}private $extension.className(){}\n" // hide implicit public constructor
                         writer << "}"
+                        writer.flush()
                     }
                 } else if( language == Language.KOTLIN ) {
                     new File(gversion_file_path, extension.className + ".kt").withWriter { writer ->
@@ -283,6 +292,7 @@ class GVersion implements Plugin<Project> {
                         writer << "const val BUILD_DATE $typeString= \"$date_string\"\n"
                         writer << "const val BUILD_UNIX_TIME $typeLong= " + unix_time + "L\n"
                         writer << "const val DIRTY $typeInt= $dirty_value\n"
+                        writer.flush()
                     }
                 } else if( language == Language.YAML ) {
                     new File(gversion_file_path, extension.className + ".yaml").withWriter { writer ->
@@ -297,6 +307,7 @@ class GVersion implements Plugin<Project> {
                         writer << "BUILD_DATE: \"$date_string\"\n"
                         writer << "BUILD_UNIX_TIME: $unix_time\n"
                         writer << "DIRTY: $dirty_value\n"
+                        writer.flush()
                     }
                 } else {
                     throw new RuntimeException("BUG! Unknown language "+language)
