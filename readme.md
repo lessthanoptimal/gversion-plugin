@@ -7,7 +7,7 @@ Add the following to include gversion-plugin in your project.
 
 ```groovy
 plugins {
-  id "com.peterabeles.gversion" version "1.8.3"
+  id "com.peterabeles.gversion" version "1.9"
 }
  
 gversion {
@@ -22,6 +22,7 @@ gversion {
   language     = "java"                     // optional. Can be Java, Kotlin, or YAML. Case insensitive.
   explicitType = false                      // optional. Force types to be explicitly printed
   indent       = "\t"                       // optional. Change how code is indented. 1 tab is default.
+  annotate     = false                      // optional. Java only. Adds @Generated annotation
 }
 ```
 

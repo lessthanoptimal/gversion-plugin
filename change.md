@@ -1,3 +1,8 @@
+## 1.9
+
+- There's now a flag to include the @Generated annotation. Java only for now.
+- Java now have a return character at the end of the file
+
 ## 1.8.1 - 1.8.3
 
 - Ensure that jars are built using Java 1.8 bytecode even if a newer JDK is used
@@ -64,7 +69,7 @@
 
 ## Version 1.2.3 and 1.2.4
 
-- Properly closing stream. No more error messages
+- Properly closing stream. No more error messages.
 - Added time out on running a process
 - NOTE: You might need to kill the Gradle daemon to make it go away. 
   It seems to be caching the old plugin and using that instead of the new one
@@ -87,6 +92,6 @@
 
 ## Version 1.1
 
-- changed parameter names to be more consitent with Gradle
+- changed parameter names to be more consistent with Gradle
 - date can now specify time zone
 - unix time is included

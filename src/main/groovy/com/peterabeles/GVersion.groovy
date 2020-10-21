@@ -12,13 +12,13 @@ enum Language {
     JAVA,
     KOTLIN;
 
-    static Language convert( String name ) {
-        switch( name.toUpperCase() ) {
+    static Language convert(String name) {
+        switch (name.toUpperCase()) {
             case "JAVA": return JAVA
             case "KOTLIN": return KOTLIN
             case "YAML": return YAML
         }
-        throw new IllegalArgumentException("Unknown language. "+name)
+        throw new IllegalArgumentException("Unknown language. " + name)
     }
 }
 
@@ -32,95 +32,98 @@ class GVersionExtension {
     String indent = "\t"
     // If the language allows implicit types should it explicitly state the types?
     boolean explicitType = false
+    // Prints additional debug information
     boolean debug = false
+    // Adds an annotation indicating the file is auto generated
+    boolean annotate = false
 }
 
 class GVersion implements Plugin<Project> {
 
     GVersionExtension extension
 
-    static String gversion_file_path( Project project , GVersionExtension extension ) {
-        if(extension.srcDir == null )
+    static String gversion_file_path(Project project, GVersionExtension extension) {
+        if (extension.srcDir == null)
             throw new RuntimeException("Must set gversion_file_path")
 
         String relative_path
 
-        if( !new File(extension.srcDir).isAbsolute() ) {
-            if(extension.debug) println("path relative to sub-project")
+        if (!new File(extension.srcDir).isAbsolute()) {
+            if (extension.debug) println("path relative to sub-project")
             // relative to sub-project
             relative_path = project.file(".").path
         } else {
-            if(extension.debug) println("absolute path")
+            if (extension.debug) println("absolute path")
             // relative to system
             relative_path = ""
         }
 
         File gversion_file_path = new File(extension.srcDir,
-                extension.classPackage.replace(".",File.separator))
-        return new File(relative_path,gversion_file_path.path).getPath()
+                extension.classPackage.replace(".", File.separator))
+        return new File(relative_path, gversion_file_path.path).getPath()
     }
 
-    int executeGetSuccess( String command ) {
-        def proc = command.execute(null,new File(System.getProperty("user.dir")))
+    int executeGetSuccess(String command) {
+        def proc = command.execute(null, new File(System.getProperty("user.dir")))
         try {
             proc.consumeProcessOutput()
             proc.waitForOrKill(5000)
             return proc.exitValue()
         } catch (IOException e) {
-            if( extension.debug ) {
+            if (extension.debug) {
                 e.printStackTrace(System.err)
             }
             return -1
         }
     }
 
-    String executeGetOutput( String command , String DEFAULT ) {
-        def proc = command.execute(null,new File(System.getProperty("user.dir")))
+    String executeGetOutput(String command, String DEFAULT) {
+        def proc = command.execute(null, new File(System.getProperty("user.dir")))
         try {
             def output = new ByteArrayOutputStream(4096)
-            proc.consumeProcessOutput(output,new ByteArrayOutputStream(4096))
+            proc.consumeProcessOutput(output, new ByteArrayOutputStream(4096))
             proc.waitForOrKill(5000)
             def text = output.toString().trim()
-            if( text.isBlank() ) {
-                if( extension.debug ) {
+            if (text.isBlank()) {
+                if (extension.debug) {
                     System.err.println("command returned an empty string")
-                    System.err.println("pwd     = "+new File(".").getAbsolutePath())
-                    System.err.println("command = "+command)
+                    System.err.println("pwd     = " + new File(".").getAbsolutePath())
+                    System.err.println("command = " + command)
                 }
                 return DEFAULT
             }
-            if( proc.exitValue() != 0 ) {
-                if( extension.debug ) {
-                    System.err.println("command returned non-zero value: "+proc.exitValue())
-                    System.err.println("pwd     = "+new File(".").getAbsolutePath())
-                    System.err.println("command = "+command)
-                    System.err.println("output  = "+text)
+            if (proc.exitValue() != 0) {
+                if (extension.debug) {
+                    System.err.println("command returned non-zero value: " + proc.exitValue())
+                    System.err.println("pwd     = " + new File(".").getAbsolutePath())
+                    System.err.println("command = " + command)
+                    System.err.println("output  = " + text)
                 }
                 return DEFAULT
             }
             return text
         } catch (IOException e) {
-            if( extension.debug ) {
+            if (extension.debug) {
                 e.printStackTrace(System.err)
             }
             return DEFAULT
         }
     }
 
-    static int[] parseGitVersion( String text ) {
-        int []version = new int[3]
+    static int[] parseGitVersion(String text) {
+        int[] version = new int[3]
 
-        if( text == null )
+        if (text == null)
             return version
-        String []words = text.split("\\s+")
-        if( words.length != 3 )
+        String[] words = text.split("\\s+")
+        if (words.length != 3)
             return version
 
         words = words[2].split("\\.")
-        if( words.length < 1 )
+        if (words.length < 1)
             return version
 
-        for (int i = 0; i < Math.min(version.length,words.length); i++) {
+        for (int i = 0; i < Math.min(version.length, words.length); i++) {
             version[i] = Integer.parseInt(words[i])
         }
 
@@ -131,15 +134,15 @@ class GVersion implements Plugin<Project> {
         // Add the 'greeting' extension object
         extension = project.extensions.create('gversion', GVersionExtension)
 
-        project.ext.checkProjectExistsAddToList = { whichProject , list ->
+        project.ext.checkProjectExistsAddToList = { whichProject, list ->
             try {
                 project.project(whichProject)
                 list.add(whichProject)
-            } catch( UnknownProjectException ignore ) {}
+            } catch (UnknownProjectException ignore) {}
         }
 
         // Force the release build to fail if it depends on a SNAPSHOT
-        project.tasks.create('checkDependsOnSNAPSHOT'){
+        project.tasks.create('checkDependsOnSNAPSHOT') {
             doLast {
                 if (project.version.endsWith("SNAPSHOT"))
                     return
@@ -152,13 +155,13 @@ class GVersion implements Plugin<Project> {
         }
 
         // Throw an exception if the repo is dirty and it's a release version
-        project.tasks.create('failDirtyNotSnapshot'){
+        project.tasks.create('failDirtyNotSnapshot') {
             doLast {
                 if (project.version.endsWith("SNAPSHOT"))
                     return
 
                 def dirty_value = executeGetSuccess('git diff --quiet --ignore-submodules=dirty')
-                if( dirty_value != 0 ) {
+                if (dirty_value != 0) {
                     throw new Exception("Git dirty check failed. Check in your code!")
                 }
             }
@@ -166,15 +169,15 @@ class GVersion implements Plugin<Project> {
 
         project.task('checkForVersionFile') {
             doLast {
-                def f = new File(gversion_file_path(project,extension),extension.className+".java")
-                if( !f.exists() ) {
+                def f = new File(gversion_file_path(project, extension), extension.className + ".java")
+                if (!f.exists()) {
                     throw new RuntimeException("GVersion.java does not exist. Call 'createVersionFile'")
                 }
             }
         }
 
         // Creates a resource file containing build information
-        project.task('createVersionFile'){
+        project.task('createVersionFile') {
             doLast {
                 // For some strange reasons it was using the daemon's home directory instead of the project's!
                 System.setProperty("user.dir", project.projectDir.toString())
@@ -235,6 +238,7 @@ class GVersion implements Plugin<Project> {
                     }
                 }
 
+
                 def indent = extension.indent
                 def unix_time = System.currentTimeMillis()
                 def formatter = new SimpleDateFormat(extension.dateFormat)
@@ -244,14 +248,21 @@ class GVersion implements Plugin<Project> {
                 Language language = Language.convert(extension.language)
 
                 if (language == Language.JAVA) {
-                    new File(gversion_file_path, extension.className + ".java").withWriter {writer->
+                    new File(gversion_file_path, extension.className + ".java").withWriter { writer ->
                         if (extension.classPackage.size() > 0) {
-                            writer << "package $extension.classPackage;\n"
-                            writer << "\n\n"
+                            writer << "package $extension.classPackage;\n\n"
                         }
+
+                        if (extension.annotate) {
+                            writer << "import javax.annotation.Generated;\n\n"
+                        }
+
                         writer << "/**\n"
                         writer << " * Automatically generated file containing build version information.\n"
                         writer << " */\n"
+                        if (extension.annotate) {
+                            writer << "@Generated(\"com.peterabeles.GVersion\")\n"
+                        }
                         writer << "public final class $extension.className {\n"
                         writer << "${indent}public static final String MAVEN_GROUP = \"$project.group\";\n"
                         writer << "${indent}public static final String MAVEN_NAME = \"$project.name\";\n"
@@ -265,10 +276,10 @@ class GVersion implements Plugin<Project> {
                         writer << "${indent}public static final int DIRTY = " + dirty_value + ";\n"
                         writer << "\n"
                         writer << "${indent}private $extension.className(){}\n" // hide implicit public constructor
-                        writer << "}"
+                        writer << "}\n"
                         writer.flush()
                     }
-                } else if( language == Language.KOTLIN ) {
+                } else if (language == Language.KOTLIN) {
                     new File(gversion_file_path, extension.className + ".kt").withWriter { writer ->
                         if (extension.classPackage.size() > 0) {
                             writer << "package $extension.classPackage\n"
@@ -294,7 +305,7 @@ class GVersion implements Plugin<Project> {
                         writer << "const val DIRTY $typeInt= $dirty_value\n"
                         writer.flush()
                     }
-                } else if( language == Language.YAML ) {
+                } else if (language == Language.YAML) {
                     new File(gversion_file_path, extension.className + ".yaml").withWriter { writer ->
                         writer << "---\n"
                         writer << "MAVEN_GROUP: \"$project.group\"\n"
@@ -310,7 +321,7 @@ class GVersion implements Plugin<Project> {
                         writer.flush()
                     }
                 } else {
-                    throw new RuntimeException("BUG! Unknown language "+language)
+                    throw new RuntimeException("BUG! Unknown language " + language)
                 }
             }
         }
