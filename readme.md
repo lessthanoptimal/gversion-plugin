@@ -1,5 +1,5 @@
 gversion-plugin is a Gradle plugin for auto-generating a version class/file in multiple JVM Languages. Support provided 
-for Java, Kotlin, and YAML. The class will include information which can only be obtained at compile time, such as 
+for Java, Kotlin, YAML and Properties. The class will include information which can only be obtained at compile time, such as 
 build time, git SHA, and Gradle version. Command line applications are used to gather most of this information. 
 If a command line operation fails a default value will be used instead. This has been tested in Linux, Windows, and Mac OS X.
 
@@ -19,7 +19,7 @@ gversion {
   dateFormat   = "yyyy-MM-dd'T'HH:mm:ss'Z'" // optional. This is the default
   timeZone     = "UTC"                      // optional. UTC is default
   debug        = false                      // optional. print out extra debug information
-  language     = "java"                     // optional. Can be Java, Kotlin, or YAML. Case insensitive.
+  language     = "java"                     // optional. Can be Java, Kotlin, YAML, or Properties. Case insensitive.
   explicitType = false                      // optional. Force types to be explicitly printed
   indent       = "\t"                       // optional. Change how code is indented. 1 tab is default.
   annotate     = false                      // optional. Java only. Adds @Generated annotation
