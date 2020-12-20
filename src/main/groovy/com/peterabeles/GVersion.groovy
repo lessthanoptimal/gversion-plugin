@@ -155,7 +155,7 @@ class GVersion implements Plugin<Project> {
 
                 project.configurations.each {a->
                     if (extension.debug)
-                        println("checkDependsOnSNAPSHOT: project.configurations.="+a.name)
+                        println("checkDependsOnSNAPSHOT: project.configurations="+a.name)
 
                     // only consider relevant configurations
                     if ( !(a.name == "compile" || a.name == "runtime") )
