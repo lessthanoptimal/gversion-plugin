@@ -149,9 +149,22 @@ class GVersion implements Plugin<Project> {
                 if (project.version.endsWith("SNAPSHOT"))
                     return
 
-                project.configurations.compile.each {
-                    if (it.toString().contains("SNAPSHOT"))
-                        throw new Exception("Release build contains snapshot dependencies: " + it)
+                // Print out a warning if this is doing nothing
+                if (extension.debug && project.configurations.isEmpty())
+                    println("WARNING: checkDependsOnSNAPSHOT: No configurations to check!")
+
+                project.configurations.each {a->
+                    if (extension.debug)
+                        println("checkDependsOnSNAPSHOT: project.configurations.="+a.name)
+
+                    // only consider relevant configurations
+                    if ( !(a.name == "compile" || a.name == "runtime") )
+                        return
+
+                    a.each {
+                        if (it.toString().contains("SNAPSHOT"))
+                            throw new Exception("Release build contains snapshot dependencies: " + it)
+                    }
                 }
             }
         }

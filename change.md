@@ -1,3 +1,8 @@
+## 1.10
+
+- checkDependsOnSNAPSHOT will not crash is there's no 'compile'
+- If debug is true then it will print out the configurations or if there are no configurations
+
 ## 1.9
 
 - There's now a flag to include the @Generated annotation. Java only for now.
