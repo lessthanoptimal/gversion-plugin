@@ -5,7 +5,7 @@ If a command line operation fails a default value will be used instead. This has
 
 Add the following to include gversion-plugin in your project.
 
-```groovy
+```gradle
 plugins {
   id "com.peterabeles.gversion" version "1.10"
 }
@@ -27,7 +27,7 @@ gversion {
 ```
 
 
-After you invoke the Gradle task 'createVersionFile' it will create a class at src/main/java/com/your/project/MyVersion.java.
+After you invoke the Gradle task `createVersionFile` it will create a class at src/main/java/com/your/project/MyVersion.java.
 ```java
 /**
  * Automatically generated file containing build version information.
@@ -52,12 +52,12 @@ dirty, and -1 means something went wrong.
 To ensure that your version file is always up to date it's recommended that you invoke this task before the project is compiled.
 
 For a Java project you can do the following:
-```groovy
+```gradle
 project.compileJava.dependsOn(createVersionFile)
 ```
 
 For an Android project here's how you should do it:
-```groovy
+```gradle
 project(':app').preBuild.dependsOn(createVersionFile)
 ```
 ## Tasks
@@ -83,7 +83,7 @@ YAML version and read it at runtime.
 
 A few changes need to be done to work off a locally installed version. In the project using the plugin,
 change the plugin import statement to:
-```groovy
+```gradle
 apply plugin: 'com.peterabeles.gversion'
 
 buildscript {
