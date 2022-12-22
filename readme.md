@@ -51,9 +51,16 @@ dirty, and -1 means something went wrong.
 
 To ensure that your version file is always up to date it's recommended that you invoke this task before the project is compiled.
 
-For a Java project you can do the following:
+For a Java project (in `build.gradle`) you can do the following:
 ```gradle
 project.compileJava.dependsOn(createVersionFile)
+```
+
+For a Kotlin project (in `build.gradle.kts`) you can do the following:
+```kotlin
+tasks.compileKotlin {
+    dependsOn.add(tasks.createVersionFile)
+}
 ```
 
 For an Android project here's how you should do it:
