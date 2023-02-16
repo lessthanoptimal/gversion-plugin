@@ -2,3 +2,7 @@
 1) Update version in readme.md
 2) Update version in build.gradle
 3) ./gradlew publishPlugins
+
+You can double check that the bytecode version is 52 (Java 8) with the following:
+
+javap -cp /path/to/gversion-plugin-1.10.1.jar -verbose com.peterabeles.GVersion | grep major
