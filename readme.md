@@ -3,11 +3,13 @@ for Java, Kotlin, YAML and Properties. The class will include information which 
 build time, git SHA, and Gradle version. Command line applications are used to gather most of this information. 
 If a command line operation fails a default value will be used instead. This has been tested in Linux, Windows, and Mac OS X.
 
+Tested on Gradle 7. Earlier versions will run on earlier versions of Gradle.
+
 Add the following to include gversion-plugin in your project.
 
 ```gradle
 plugins {
-  id "com.peterabeles.gversion" version "1.10"
+  id "com.peterabeles.gversion" version "1.10.1"
 }
  
 gversion {

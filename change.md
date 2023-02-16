@@ -1,3 +1,8 @@
+## 1.10.1
+
+- Fixed checkDependsOnSNAPSHOT so that it actually works in Gradle 7
+- Upgraded build for Gradle 7
+
 ## 1.10
 
 - checkDependsOnSNAPSHOT will not crash is there's no 'compile'

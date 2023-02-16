@@ -146,8 +146,11 @@ class GVersion implements Plugin<Project> {
         // Force the release build to fail if it depends on a SNAPSHOT
         project.tasks.create('checkDependsOnSNAPSHOT') {
             doLast {
-                if (project.version.endsWith("SNAPSHOT"))
+                if (project.version.endsWith("SNAPSHOT")) {
+                    if (extension.debug)
+                        println("Skipping checkDependsOnSNAPSHOT. Project is a SNAPSHOT!")
                     return
+                }
 
                 // Print out a warning if this is doing nothing
                 if (extension.debug && project.configurations.isEmpty())
@@ -158,7 +161,7 @@ class GVersion implements Plugin<Project> {
                         println("checkDependsOnSNAPSHOT: project.configurations="+a.name)
 
                     // only consider relevant configurations
-                    if ( !(a.name == "compile" || a.name == "runtime") )
+                    if ( !(a.name.startsWith("compile") || a.name.startsWith("runtime")) )
                         return
 
                     a.each {
