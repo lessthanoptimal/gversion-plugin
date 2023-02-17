@@ -100,11 +100,11 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath "com.peterabeles.gversion:gversion:$VERSION"
+        classpath "com.peterabeles.gversion:gversion-plugin:$VERSION"
     }
 }
 ```
-To install your own custom version locally type ```./gradlew install``` and it should appear in your local .m2 repo
+To install your own custom version locally type ```./gradlew pTML``` and it should appear in your local .m2 repo
 
 ## Contact
 

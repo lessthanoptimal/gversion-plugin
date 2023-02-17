@@ -7,8 +7,6 @@ plugins {
 group = 'com.peterabeles.gversion'
 version = '1.10.1'
 
-project.archivesBaseName = 'gversion'
-
 repositories {
     mavenCentral()
     mavenLocal()
@@ -27,24 +25,19 @@ compileJava {
     options.compilerArgs += ["--release", "8"]
 }
 
+pluginBundle {
+    website = 'https://github.com/lessthanoptimal/gversion-plugin'
+    vcsUrl = 'https://github.com/lessthanoptimal/gversion-plugin'
+    tags = ['version', 'git', 'gradle','auto generate','auto code']
+}
+
 gradlePlugin {
     plugins {
         gversionPlugin {
             id = 'com.peterabeles.gversion'
+            displayName = 'GVersion Plugin'
+            description = 'Auto-generates project version files from Git and Gradl at compile time'
             implementationClass = 'com.peterabeles.GVersion'
-        }
-    }
-}
-
-pluginBundle {
-    website = 'https://github.com/lessthanoptimal/gversion-plugin'
-    vcsUrl = 'https://github.com/lessthanoptimal/gversion-plugin'
-
-    plugins {
-        gversionPlugin {
-            displayName = 'Gradle Auto Generated Version Class Plugin'
-            description = 'Auto-generates version class file using Git and Gradle'
-            tags = ['version', 'git', 'gradle','auto generate','auto code']
         }
     }
 }

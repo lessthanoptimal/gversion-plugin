@@ -144,7 +144,7 @@ class GVersion implements Plugin<Project> {
         }
 
         // Force the release build to fail if it depends on a SNAPSHOT
-        project.tasks.create('checkDependsOnSNAPSHOT') {
+        project.task('checkDependsOnSNAPSHOT') {
             doLast {
                 if (project.version.endsWith("SNAPSHOT")) {
                     if (extension.debug)
@@ -173,7 +173,7 @@ class GVersion implements Plugin<Project> {
         }
 
         // Throw an exception if the repo is dirty and it's a release version
-        project.tasks.create('failDirtyNotSnapshot') {
+        project.task('failDirtyNotSnapshot') {
             doLast {
                 if (project.version.endsWith("SNAPSHOT"))
                     return
