@@ -1,3 +1,7 @@
+## 1.10.2
+
+- checkDependsOnSNAPSHOT skips over configurations that can't be resolved
+
 ## 1.10.1
 
 - Fixed checkDependsOnSNAPSHOT so that it actually works in Gradle 7

@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.peterabeles.gversion'
-version = '1.10.1'
+version = '1.10.2'
 
 repositories {
     mavenCentral()
@@ -36,7 +36,7 @@ gradlePlugin {
         gversionPlugin {
             id = 'com.peterabeles.gversion'
             displayName = 'GVersion Plugin'
-            description = 'Auto-generates project version files from Git and Gradl at compile time'
+            description = 'Auto-generates project version files from Git and Gradle at compile time'
             implementationClass = 'com.peterabeles.GVersion'
         }
     }

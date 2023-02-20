@@ -140,7 +140,8 @@ class GVersion implements Plugin<Project> {
             try {
                 project.project(whichProject)
                 list.add(whichProject)
-            } catch (UnknownProjectException ignore) {}
+            } catch (UnknownProjectException ignore) {
+            }
         }
 
         // Force the release build to fail if it depends on a SNAPSHOT
@@ -156,13 +157,11 @@ class GVersion implements Plugin<Project> {
                 if (extension.debug && project.configurations.isEmpty())
                     println("WARNING: checkDependsOnSNAPSHOT: No configurations to check!")
 
-                project.configurations.each {a->
+                project.configurations.findAll { config ->
+                    config.isCanBeResolved() && (config.name.startsWith("compile") || config.name.startsWith("runtime"))
+                }.each { a ->
                     if (extension.debug)
-                        println("checkDependsOnSNAPSHOT: project.configurations="+a.name)
-
-                    // only consider relevant configurations
-                    if ( !(a.name.startsWith("compile") || a.name.startsWith("runtime")) )
-                        return
+                        println("checkDependsOnSNAPSHOT: project.configurations=" + a.name)
 
                     a.each {
                         if (it.toString().contains("SNAPSHOT"))

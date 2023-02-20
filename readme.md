@@ -9,7 +9,7 @@ Add the following to include gversion-plugin in your project.
 
 ```gradle
 plugins {
-  id "com.peterabeles.gversion" version "1.10.1"
+  id "com.peterabeles.gversion" version "1.10.2"
 }
  
 gversion {
