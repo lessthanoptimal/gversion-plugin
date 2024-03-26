@@ -42,9 +42,11 @@ public final class MyVersion {
 	public static final String GIT_SHA = "a0e41dd1a068d184009227083fa6ae276ef1846a";
 	public static final String GIT_DATE = "2018-04-10T16:26:44Z";
 	public static final String GIT_BRANCH = "master";
+	public static final String GIT_COMMITTER = "Peter Abeles";
 	public static final String BUILD_DATE = "2018-04-11T12:19:03Z";
 	public static final long BUILD_UNIX_TIME = 1523449143116L;
 	public static final int DIRTY = 0;
+	public static final String HOSTNAME = "computer-hostname";
 	private MyVersion(){}
 }
 ```

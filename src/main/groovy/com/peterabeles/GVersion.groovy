@@ -228,6 +228,7 @@ class GVersion implements Plugin<Project> {
                 def git_revision = executeGetOutput('git rev-list --count HEAD', "-1")
                 def git_sha = executeGetOutput('git rev-parse HEAD', "UNKNOWN")
                 def git_branch = executeGetOutput('git rev-parse --abbrev-ref HEAD', "UNKNOWN")
+                def git_committer = executeGetOutput('git show -s --format=%cn HEAD', "UNKNOWN")
                 def git_date
                 def date_format
 
@@ -258,6 +259,7 @@ class GVersion implements Plugin<Project> {
 
                 def indent = extension.indent
                 def unix_time = System.currentTimeMillis()
+                def hostname = executeGetOutput('hostname', "UNKNOWN")
                 def formatter = new SimpleDateFormat(extension.dateFormat)
                 formatter.setTimeZone(tz)
                 String date_string = formatter.format(new Date(unix_time))
@@ -288,9 +290,11 @@ class GVersion implements Plugin<Project> {
                         writer << "${indent}public static final String GIT_SHA = \"$git_sha\";\n"
                         writer << "${indent}public static final String GIT_DATE = \"$git_date\";\n"
                         writer << "${indent}public static final String GIT_BRANCH = \"$git_branch\";\n"
+                        writer << "${indent}public static final String GIT_COMMITER = \"$git_committer\";\n"
                         writer << "${indent}public static final String BUILD_DATE = \"$date_string\";\n"
                         writer << "${indent}public static final long BUILD_UNIX_TIME = " + unix_time + "L;\n"
                         writer << "${indent}public static final int DIRTY = " + dirty_value + ";\n"
+                        writer << "${indent}public static final String HOSTNAME = \"$hostname\";\n"
                         writer << "\n"
                         writer << "${indent}private $extension.className(){}\n" // hide implicit public constructor
                         writer << "}\n"
@@ -317,9 +321,11 @@ class GVersion implements Plugin<Project> {
                         writer << "const val GIT_SHA $typeString= \"$git_sha\"\n"
                         writer << "const val GIT_DATE $typeString= \"$git_date\"\n"
                         writer << "const val GIT_BRANCH $typeString= \"$git_branch\"\n"
+                        writer << "const val GIT_COMMITER $typeString= \"$git_committer\"\n"
                         writer << "const val BUILD_DATE $typeString= \"$date_string\"\n"
                         writer << "const val BUILD_UNIX_TIME $typeLong= " + unix_time + "L\n"
                         writer << "const val DIRTY $typeInt= $dirty_value\n"
+                        writer << "const val HOSTNAME $typeString= \"$hostname\"\n"
                         writer.flush()
                     }
                 } else if (language == Language.YAML) {
@@ -332,9 +338,11 @@ class GVersion implements Plugin<Project> {
                         writer << "GIT_SHA: \"$git_sha\"\n"
                         writer << "GIT_DATE: \"$git_date\"\n"
                         writer << "GIT_BRANCH: \"$git_branch\"\n"
+                        writer << "GIT_COMMITER: \"$git_committer\"\n"
                         writer << "BUILD_DATE: \"$date_string\"\n"
                         writer << "BUILD_UNIX_TIME: $unix_time\n"
                         writer << "DIRTY: $dirty_value\n"
+                        writer << "HOSTNAME: \"$hostname\"\n"
                         writer.flush()
                     }
                 } else if (language == Language.PROPERTIES) {
@@ -349,8 +357,10 @@ class GVersion implements Plugin<Project> {
                         writer << "sha=\"$git_sha\"\n"
                         writer << "git_date=\"$git_date\"\n"
                         writer << "git_branch=\"$git_branch\"\n"
+                        writer << "committer=\"$git_committer\"\n"
                         writer << "build_date=\"$date_string\"\n"
                         writer << "dirty=$dirty_value\n"
+                        writer << "hostname=\"$hostname\"\n"
                         writer.flush()
                     }
                 } else {
