@@ -340,16 +340,16 @@ class GVersion implements Plugin<Project> {
                 } else if (language == Language.PROPERTIES) {
                     new File(gversion_file_path, extension.className).withWriter { writer ->
                         writer << "#Created by build system. Do not modify\n"
-                        writer << "#\"$date_string\"\n"
-                        writer << "version=\"$project.version\"\n"
+                        writer << "#$date_string\n"
+                        writer << "version=$project.version\n"
                         writer << "revision=$git_revision\n"
-                        writer << "name=\"$project.name\"\n"
+                        writer << "name=$project.name\n"
                         writer << "timestamp=$unix_time\n"
-                        writer << "group=\"$project.group\"\n"
-                        writer << "sha=\"$git_sha\"\n"
-                        writer << "git_date=\"$git_date\"\n"
-                        writer << "git_branch=\"$git_branch\"\n"
-                        writer << "build_date=\"$date_string\"\n"
+                        writer << "group=$project.group\n"
+                        writer << "sha=$git_sha\n"
+                        writer << "git_date=$git_date\n"
+                        writer << "git_branch=$git_branch\n"
+                        writer << "build_date=$date_string\n"
                         writer << "dirty=$dirty_value\n"
                         writer.flush()
                     }
