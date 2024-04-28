@@ -225,7 +225,7 @@ class GVersion implements Plugin<Project> {
 //                println("  git version "+version_of_git[0]+"."+version_of_git[1]+"."+version_of_git[2])
 
                 def dirty_value = executeGetSuccess('git diff --quiet --ignore-submodules=dirty')
-                def git_revision = executeGetOutput('git rev-list --count HEAD', "-1")
+                def git_revision = executeGetOutput('git rev-list --no-show-signature --count HEAD', "-1")
                 def git_sha = executeGetOutput('git rev-parse HEAD', "UNKNOWN")
                 def git_branch = executeGetOutput('git rev-parse --abbrev-ref HEAD', "UNKNOWN")
                 def git_date
@@ -233,10 +233,10 @@ class GVersion implements Plugin<Project> {
 
                 if (version_of_git[0] == 1) {
                     date_format = "yyyy-MM-dd HH:mm:ss Z"
-                    git_date = executeGetOutput('git show -s --format=%ci HEAD', "UNKNOWN")
+                    git_date = executeGetOutput('git show --no-show-signature -s --format=%ci HEAD', "UNKNOWN")
                 } else {
                     date_format = "yyyy-MM-dd'T'HH:mm:ssXXX"
-                    git_date = executeGetOutput('git show -s --format=%cI HEAD', "UNKNOWN")
+                    git_date = executeGetOutput('git show --no-show-signature -s --format=%cI HEAD', "UNKNOWN")
                 }
                 if (!git_date.equals("UNKNOWN")) {
                     try {
