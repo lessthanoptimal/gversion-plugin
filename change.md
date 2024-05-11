@@ -1,3 +1,8 @@
+## 1.10.3
+
+- Remove double quotes from values in properties files. Thanks Dean Brettle
+- Suppress signature verification output when running git commands. Thanks Thomas Sutton
+
 ## 1.10.2
 
 - checkDependsOnSNAPSHOT skips over configurations that can't be resolved
