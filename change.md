@@ -1,3 +1,7 @@
+## 1.10.4
+- Updated to a recent version of plugin-publish
+- Updated to Gradle 8.12.1
+
 ## 1.10.3
 
 - Remove double quotes from values in properties files. Thanks Dean Brettle

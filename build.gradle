@@ -24,24 +24,22 @@ compileJava {
     options.compilerArgs += ["--release", "8"]
 }
 
-pluginBundle {
+gradlePlugin {
     website = 'https://github.com/lessthanoptimal/gversion-plugin'
     vcsUrl = 'https://github.com/lessthanoptimal/gversion-plugin'
-    tags = ['version', 'git', 'gradle','auto generate','auto code']
-}
 
-gradlePlugin {
     plugins {
         gversionPlugin {
             id = 'com.peterabeles.gversion'
             displayName = 'GVersion Plugin'
             description = 'Auto-generates project version files from Git and Gradle at compile time'
             implementationClass = 'com.peterabeles.GVersion'
+            tags.set(['version', 'git', 'gradle','auto generate','auto code'])
         }
     }
 }
 
 wrapper {
     distributionType = Wrapper.DistributionType.BIN
-    gradleVersion = '7.6.4'
+    gradleVersion = '8.12.1'
 }
