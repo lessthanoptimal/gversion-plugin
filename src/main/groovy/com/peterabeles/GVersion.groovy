@@ -255,12 +255,11 @@ class GVersion implements Plugin<Project> {
                     }
                 }
 
-
                 def indent = extension.indent
-                def unix_time = System.currentTimeMillis()
+                def build_unix_time = System.currentTimeMillis()
                 def formatter = new SimpleDateFormat(extension.dateFormat)
                 formatter.setTimeZone(tz)
-                String date_string = formatter.format(new Date(unix_time))
+                String build_date = formatter.format(new Date(build_unix_time))
 
                 Language language = Language.convert(extension.language)
 
@@ -275,7 +274,7 @@ class GVersion implements Plugin<Project> {
                         }
 
                         writer << "/**\n"
-                        writer << " * Automatically generated file containing build version information.\n"
+                        writer << " * Automatically generated build version information. Do not modify.\n"
                         writer << " */\n"
                         if (extension.annotate) {
                             writer << "@Generated(\"com.peterabeles.GVersion\")\n"
@@ -288,8 +287,8 @@ class GVersion implements Plugin<Project> {
                         writer << "${indent}public static final String GIT_SHA = \"$git_sha\";\n"
                         writer << "${indent}public static final String GIT_DATE = \"$git_date\";\n"
                         writer << "${indent}public static final String GIT_BRANCH = \"$git_branch\";\n"
-                        writer << "${indent}public static final String BUILD_DATE = \"$date_string\";\n"
-                        writer << "${indent}public static final long BUILD_UNIX_TIME = " + unix_time + "L;\n"
+                        writer << "${indent}public static final String BUILD_DATE = \"$build_date\";\n"
+                        writer << "${indent}public static final long BUILD_UNIX_TIME = " + build_unix_time + "L;\n"
                         writer << "${indent}public static final int DIRTY = " + dirty_value + ";\n"
                         writer << "\n"
                         writer << "${indent}private $extension.className(){}\n" // hide implicit public constructor
@@ -308,7 +307,7 @@ class GVersion implements Plugin<Project> {
                         def typeLong = extension.explicitType ? ": Long " : ""
 
                         writer << "/**\n"
-                        writer << " * Automatically generated file containing build version information.\n"
+                        writer << " * Automatically generated build version information. Do not modify.\n"
                         writer << " */\n"
                         writer << "const val MAVEN_GROUP $typeString= \"$project.group\"\n"
                         writer << "const val MAVEN_NAME $typeString= \"$project.name\"\n"
@@ -317,8 +316,8 @@ class GVersion implements Plugin<Project> {
                         writer << "const val GIT_SHA $typeString= \"$git_sha\"\n"
                         writer << "const val GIT_DATE $typeString= \"$git_date\"\n"
                         writer << "const val GIT_BRANCH $typeString= \"$git_branch\"\n"
-                        writer << "const val BUILD_DATE $typeString= \"$date_string\"\n"
-                        writer << "const val BUILD_UNIX_TIME $typeLong= " + unix_time + "L\n"
+                        writer << "const val BUILD_DATE $typeString= \"$build_date\"\n"
+                        writer << "const val BUILD_UNIX_TIME $typeLong= " + build_unix_time + "L\n"
                         writer << "const val DIRTY $typeInt= $dirty_value\n"
                         writer.flush()
                     }
@@ -332,24 +331,23 @@ class GVersion implements Plugin<Project> {
                         writer << "GIT_SHA: \"$git_sha\"\n"
                         writer << "GIT_DATE: \"$git_date\"\n"
                         writer << "GIT_BRANCH: \"$git_branch\"\n"
-                        writer << "BUILD_DATE: \"$date_string\"\n"
-                        writer << "BUILD_UNIX_TIME: $unix_time\n"
+                        writer << "BUILD_DATE: \"$build_date\"\n"
+                        writer << "BUILD_UNIX_TIME: $build_unix_time\n"
                         writer << "DIRTY: $dirty_value\n"
                         writer.flush()
                     }
                 } else if (language == Language.PROPERTIES) {
                     new File(gversion_file_path, extension.className).withWriter { writer ->
-                        writer << "#Created by build system. Do not modify\n"
-                        writer << "#$date_string\n"
+                        writer << "# Automatically generated build version information. Do not modify\n"
+                        writer << "maven_group=$project.group\n"
+                        writer << "maven_name=$project.name\n"
                         writer << "version=$project.version\n"
-                        writer << "revision=$git_revision\n"
-                        writer << "name=$project.name\n"
-                        writer << "timestamp=$unix_time\n"
-                        writer << "group=$project.group\n"
-                        writer << "sha=$git_sha\n"
+                        writer << "git_revision=$git_revision\n"
+                        writer << "git_sha=$git_sha\n"
                         writer << "git_date=$git_date\n"
                         writer << "git_branch=$git_branch\n"
-                        writer << "build_date=$date_string\n"
+                        writer << "build_date=$build_date\n"
+                        writer << "build_unix_time=$build_unix_time\n"
                         writer << "dirty=$dirty_value\n"
                         writer.flush()
                     }
