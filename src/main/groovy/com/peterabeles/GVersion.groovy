@@ -288,7 +288,7 @@ class GVersion implements Plugin<Project> {
                         writer << "${indent}public static final String GIT_SHA = \"$git_sha\";\n"
                         writer << "${indent}public static final String GIT_DATE = \"$git_date\";\n"
                         writer << "${indent}public static final String GIT_BRANCH = \"$git_branch\";\n"
-                        writer << "${indent}public static final String GIT_EMAIL = \"$gitemail\";\n"
+                        writer << "${indent}public static final String GIT_EMAIL = \"$git_email\";\n"
                         writer << "${indent}public static final String BUILD_DATE = \"$build_date\";\n"
                         writer << "${indent}public static final long BUILD_UNIX_TIME = " + build_unix_time + "L;\n"
                         writer << "${indent}public static final int DIRTY = " + dirty_value + ";\n"
