@@ -228,6 +228,7 @@ class GVersion implements Plugin<Project> {
                 def git_revision = executeGetOutput('git rev-list --no-show-signature --count HEAD', "-1")
                 def git_sha = executeGetOutput('git rev-parse HEAD', "UNKNOWN")
                 def git_branch = executeGetOutput('git rev-parse --abbrev-ref HEAD', "UNKNOWN")
+                def git_email = executeGetOutput('git config user.email', "UNKNOWN")
                 def git_date
                 def date_format
 
@@ -287,6 +288,7 @@ class GVersion implements Plugin<Project> {
                         writer << "${indent}public static final String GIT_SHA = \"$git_sha\";\n"
                         writer << "${indent}public static final String GIT_DATE = \"$git_date\";\n"
                         writer << "${indent}public static final String GIT_BRANCH = \"$git_branch\";\n"
+                        writer << "${indent}public static final String GIT_EMAIL = \"$gitemail\";\n"
                         writer << "${indent}public static final String BUILD_DATE = \"$build_date\";\n"
                         writer << "${indent}public static final long BUILD_UNIX_TIME = " + build_unix_time + "L;\n"
                         writer << "${indent}public static final int DIRTY = " + dirty_value + ";\n"
@@ -316,6 +318,7 @@ class GVersion implements Plugin<Project> {
                         writer << "const val GIT_SHA $typeString= \"$git_sha\"\n"
                         writer << "const val GIT_DATE $typeString= \"$git_date\"\n"
                         writer << "const val GIT_BRANCH $typeString= \"$git_branch\"\n"
+                        writer << "const val GIT_EMAIL $typeString= \"$git_email\"\n"
                         writer << "const val BUILD_DATE $typeString= \"$build_date\"\n"
                         writer << "const val BUILD_UNIX_TIME $typeLong= " + build_unix_time + "L\n"
                         writer << "const val DIRTY $typeInt= $dirty_value\n"
@@ -331,6 +334,7 @@ class GVersion implements Plugin<Project> {
                         writer << "GIT_SHA: \"$git_sha\"\n"
                         writer << "GIT_DATE: \"$git_date\"\n"
                         writer << "GIT_BRANCH: \"$git_branch\"\n"
+                        writer << "GIT_EMAIL: \"$git_email\"\n"
                         writer << "BUILD_DATE: \"$build_date\"\n"
                         writer << "BUILD_UNIX_TIME: $build_unix_time\n"
                         writer << "DIRTY: $dirty_value\n"
@@ -346,6 +350,7 @@ class GVersion implements Plugin<Project> {
                         writer << "git_sha=$git_sha\n"
                         writer << "git_date=$git_date\n"
                         writer << "git_branch=$git_branch\n"
+                        writer << "git_email=$git_email\n"
                         writer << "build_date=$build_date\n"
                         writer << "build_unix_time=$build_unix_time\n"
                         writer << "dirty=$dirty_value\n"
