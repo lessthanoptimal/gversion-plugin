@@ -177,8 +177,9 @@ class GVersion implements Plugin<Project> {
                 if (project.version.endsWith("SNAPSHOT"))
                     return
 
-                def dirty_value = executeGetSuccess('git diff --quiet --ignore-submodules=dirty')
-                if (dirty_value != 0) {
+                def results = executeGetOutput('git diff --name-only', "")
+                if (!results.isEmpty()) {
+                    System.err.println("Modified Files:\n" + results);
                     throw new Exception("Git dirty check failed. Check in your code!")
                 }
             }

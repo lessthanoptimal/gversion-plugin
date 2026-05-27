@@ -1,3 +1,8 @@
+## 1.11.0
+
+- Dirty check will print out the modified files
+
+
 ## 1.10.4
 - Updated to a recent version of plugin-publish
 - Updated to Gradle 8.12.1
