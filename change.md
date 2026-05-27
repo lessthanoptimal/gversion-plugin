@@ -4,6 +4,7 @@
 - You can manually specify the version
 - You can change the SNAPSHOT suffix
 - It will attempt to resolve the version on Android now
+- You can now configure which import to use for @Generated annotation
 
 
 ## 1.10.4

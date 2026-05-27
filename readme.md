@@ -24,7 +24,9 @@ gversion {
   language     = "java"                     // optional. Can be Java, Kotlin, YAML, or Properties. Case insensitive.
   explicitType = false                      // optional. Force types to be explicitly printed
   indent       = "\t"                       // optional. Change how code is indented. 1 tab is default.
-  annotate     = false                      // optional. Java only. Adds @Generated annotation
+  annotate     = ""                         // optional. Java only. If not empty it adds @Generated.
+                                            //    Specify an import path, e.g. "javax.annotation.Generated" or 
+                                            //                                 "jakarta.annotation.Generated"
   version      = "Project Version"          // optional. Use when automatic version fails
   snapshot     = "SNAPSHOT                  // optional. Specifies dev version suffixes
 }

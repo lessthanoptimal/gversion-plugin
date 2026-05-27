@@ -36,8 +36,8 @@ class GVersionExtension {
     boolean explicitType = false
     // Prints additional debug information
     boolean debug = false
-    // Adds an annotation indicating the file is auto generated
-    boolean annotate = false
+    // If not empty, it will use the specified import path and add an @Generated
+    String annotate = ""
     // Way override automatic version determination or set it when unknown
     String version = ""
     // String used to specify developmental/SNAPSHOT versions
@@ -296,14 +296,14 @@ class GVersion implements Plugin<Project> {
                             writer << "package $extension.classPackage;\n\n"
                         }
 
-                        if (extension.annotate) {
-                            writer << "import javax.annotation.Generated;\n\n"
+                        if (!extension.annotate.isEmpty()) {
+                            writer << "import $extension.annotate;\n\n"
                         }
 
                         writer << "/**\n"
                         writer << " * Automatically generated build version information. Do not modify.\n"
                         writer << " */\n"
-                        if (extension.annotate) {
+                        if (!extension.annotate.isEmpty()) {
                             writer << "@Generated(\"com.peterabeles.GVersion\")\n"
                         }
                         writer << "public final class $extension.className {\n"
