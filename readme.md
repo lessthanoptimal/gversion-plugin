@@ -28,7 +28,7 @@ gversion {
                                             //    Specify an import path, e.g. "javax.annotation.Generated" or 
                                             //                                 "jakarta.annotation.Generated"
   version      = "Project Version"          // optional. Use when automatic version fails
-  snapshot     = "SNAPSHOT                  // optional. Specifies dev version suffixes
+  snapshot     = "SNAPSHOT"                 // optional. Specifies dev version suffixes
 }
 ```
 
