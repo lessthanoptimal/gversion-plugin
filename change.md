@@ -6,8 +6,8 @@
 - It will attempt to resolve the version on Android now
 - You can now configure which import to use for @Generated annotation
 
-
 ## 1.10.4
+
 - Updated to a recent version of plugin-publish
 - Updated to Gradle 8.12.1
 
