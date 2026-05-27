@@ -92,6 +92,16 @@ YAML version and read it at runtime.
 
 ## Developers
 
+In newer versions of Gradle you just need to tell the plugin manager to use mavenLocal:
+
+```Kotlin
+pluginManagement {
+    repositories {
+        mavenLocal()
+```
+
+For older versions you need to jump through a few more hoops:
+
 A few changes need to be done to work off a locally installed version. In the project using the plugin,
 change the plugin import statement to:
 ```gradle

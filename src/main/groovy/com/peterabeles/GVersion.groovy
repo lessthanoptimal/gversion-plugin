@@ -147,7 +147,7 @@ class GVersion implements Plugin<Project> {
     }
 
     // Determines the version only if it needs to
-    def resolveVersionIfNeeded = {
+    void resolveVersionIfNeeded(Project project) {
         if (extension.version.isEmpty()) {
             extension.version = resolveVersion(project)
         }
@@ -168,7 +168,7 @@ class GVersion implements Plugin<Project> {
         // Force the release build to fail if it depends on a SNAPSHOT
         project.task('checkDependsOnSNAPSHOT') {
             doLast {
-                resolveVersionIfNeeded()
+                resolveVersionIfNeeded(project)
 
                 if (extension.version.endsWith(extension.snapshot)) {
                     if (extension.debug)
@@ -197,7 +197,7 @@ class GVersion implements Plugin<Project> {
         // Throw an exception if the repo is dirty and it's a release version
         project.task('failDirtyNotSnapshot') {
             doLast {
-                resolveVersionIfNeeded()
+                resolveVersionIfNeeded(project)
                 if (extension.version.endsWith(extension.snapshot))
                     return
 
@@ -221,7 +221,7 @@ class GVersion implements Plugin<Project> {
         // Creates a resource file containing build information
         project.task('createVersionFile') {
             doLast {
-                resolveVersionIfNeeded()
+                resolveVersionIfNeeded(project)
 
                 // For some strange reasons it was using the daemon's home directory instead of the project's!
                 System.setProperty("user.dir", project.projectDir.toString())
