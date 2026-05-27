@@ -34,7 +34,7 @@ gradlePlugin {
             displayName = 'GVersion Plugin'
             description = 'Auto-generates project version files from Git and Gradle at compile time'
             implementationClass = 'com.peterabeles.GVersion'
-            tags.set(['version', 'git', 'gradle','auto generate','auto code'])
+            tags.set(['version', 'git', 'auto generate','auto code'])
         }
     }
 }
