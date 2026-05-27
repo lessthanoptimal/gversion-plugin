@@ -110,4 +110,4 @@ To install your own custom version locally type ```./gradlew pTML``` and it shou
 
 ## Contact
 
-This plugin is writen by Peter Abeles and has been released under a dual license: Public Domain and MIT. Please use github to post bugs and feature requests.
+This plugin is written by Peter Abeles and has been released under a dual license: Public Domain and MIT. Please use github to post bugs and feature requests.
