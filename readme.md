@@ -9,7 +9,7 @@ Add the following to include gversion-plugin in your project.
 
 ```gradle
 plugins {
-  id "com.peterabeles.gversion" version "1.10.3"
+  id "com.peterabeles.gversion" version "1.11.0"
 }
  
 gversion {
@@ -25,6 +25,8 @@ gversion {
   explicitType = false                      // optional. Force types to be explicitly printed
   indent       = "\t"                       // optional. Change how code is indented. 1 tab is default.
   annotate     = false                      // optional. Java only. Adds @Generated annotation
+  version      = "Project Version"          // optional. Use when automatic version fails
+  snapshot     = "SNAPSHOT                  // optional. Specifies dev version suffixes
 }
 ```
 

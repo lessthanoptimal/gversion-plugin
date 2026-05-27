@@ -38,6 +38,10 @@ class GVersionExtension {
     boolean debug = false
     // Adds an annotation indicating the file is auto generated
     boolean annotate = false
+    // Way override automatic version determination or set it when unknown
+    String version = ""
+    // String used to specify developmental/SNAPSHOT versions
+    String snapshot = "SNAPSHOT"
 }
 
 class GVersion implements Plugin<Project> {
@@ -132,6 +136,23 @@ class GVersion implements Plugin<Project> {
         return version
     }
 
+    // Attempts to automatically determine project version from Android of Java library
+    static String resolveVersion(Project project) {
+        // Try Android first if applied
+        def androidExt = project.extensions.findByName('android')
+        def vn = androidExt?.defaultConfig?.versionName
+        if (vn != null) return vn.toString()
+
+        return project.version?.toString() ?: "Unknown"
+    }
+
+    // Determines the version only if it needs to
+    def resolveVersionIfNeeded = {
+        if (extension.version.isEmpty()) {
+            extension.version = resolveVersion(project)
+        }
+    }
+
     void apply(Project project) {
         // Add the 'greeting' extension object
         extension = project.extensions.create('gversion', GVersionExtension)
@@ -147,7 +168,9 @@ class GVersion implements Plugin<Project> {
         // Force the release build to fail if it depends on a SNAPSHOT
         project.task('checkDependsOnSNAPSHOT') {
             doLast {
-                if (project.version.endsWith("SNAPSHOT")) {
+                resolveVersionIfNeeded()
+
+                if (extension.version.endsWith(extension.snapshot)) {
                     if (extension.debug)
                         println("Skipping checkDependsOnSNAPSHOT. Project is a SNAPSHOT!")
                     return
@@ -164,7 +187,7 @@ class GVersion implements Plugin<Project> {
                         println("checkDependsOnSNAPSHOT: project.configurations=" + a.name)
 
                     a.each {
-                        if (it.toString().contains("SNAPSHOT"))
+                        if (it.toString().contains(extension.snapshot))
                             throw new Exception("Release build contains snapshot dependencies: " + it)
                     }
                 }
@@ -174,7 +197,8 @@ class GVersion implements Plugin<Project> {
         // Throw an exception if the repo is dirty and it's a release version
         project.task('failDirtyNotSnapshot') {
             doLast {
-                if (project.version.endsWith("SNAPSHOT"))
+                resolveVersionIfNeeded()
+                if (extension.version.endsWith(extension.snapshot))
                     return
 
                 def results = executeGetOutput('git diff --name-only', "")
@@ -197,6 +221,8 @@ class GVersion implements Plugin<Project> {
         // Creates a resource file containing build information
         project.task('createVersionFile') {
             doLast {
+                resolveVersionIfNeeded()
+
                 // For some strange reasons it was using the daemon's home directory instead of the project's!
                 System.setProperty("user.dir", project.projectDir.toString())
 
@@ -283,7 +309,7 @@ class GVersion implements Plugin<Project> {
                         writer << "public final class $extension.className {\n"
                         writer << "${indent}public static final String MAVEN_GROUP = \"$project.group\";\n"
                         writer << "${indent}public static final String MAVEN_NAME = \"$project.name\";\n"
-                        writer << "${indent}public static final String VERSION = \"$project.version\";\n"
+                        writer << "${indent}public static final String VERSION = \"$extension.version\";\n"
                         writer << "${indent}public static final int GIT_REVISION = $git_revision;\n"
                         writer << "${indent}public static final String GIT_SHA = \"$git_sha\";\n"
                         writer << "${indent}public static final String GIT_DATE = \"$git_date\";\n"
@@ -312,7 +338,7 @@ class GVersion implements Plugin<Project> {
                         writer << " */\n"
                         writer << "const val MAVEN_GROUP $typeString= \"$project.group\"\n"
                         writer << "const val MAVEN_NAME $typeString= \"$project.name\"\n"
-                        writer << "const val VERSION $typeString= \"$project.version\"\n"
+                        writer << "const val VERSION $typeString= \"$extension.version\"\n"
                         writer << "const val GIT_REVISION $typeInt= $git_revision\n"
                         writer << "const val GIT_SHA $typeString= \"$git_sha\"\n"
                         writer << "const val GIT_DATE $typeString= \"$git_date\"\n"
@@ -327,7 +353,7 @@ class GVersion implements Plugin<Project> {
                         writer << "---\n"
                         writer << "MAVEN_GROUP: \"$project.group\"\n"
                         writer << "MAVEN_NAME: \"$project.name\"\n"
-                        writer << "VERSION: \"$project.version\"\n"
+                        writer << "VERSION: \"$extension.version\"\n"
                         writer << "GIT_REVISION: $git_revision\n"
                         writer << "GIT_SHA: \"$git_sha\"\n"
                         writer << "GIT_DATE: \"$git_date\"\n"
@@ -342,7 +368,7 @@ class GVersion implements Plugin<Project> {
                         writer << "# Automatically generated build version information. Do not modify\n"
                         writer << "maven_group=$project.group\n"
                         writer << "maven_name=$project.name\n"
-                        writer << "version=$project.version\n"
+                        writer << "version=$extension.version\n"
                         writer << "git_revision=$git_revision\n"
                         writer << "git_sha=$git_sha\n"
                         writer << "git_date=$git_date\n"

@@ -1,6 +1,9 @@
 ## 1.11.0
 
 - Dirty check will print out the modified files
+- You can manually specify the version
+- You can change the SNAPSHOT suffix
+- It will attempt to resolve the version on Android now
 
 
 ## 1.10.4
